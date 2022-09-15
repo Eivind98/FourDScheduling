@@ -1,0 +1,228 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+using Xbim.Ifc;
+using System.Diagnostics;
+using System.IO;
+using Xbim.Ifc4.Interfaces;
+
+namespace FourDScheduling
+{
+    public class Program
+    {
+        static void Main(string[] args)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            string xmlPath = "D:\\Gantt Test\\empty.gan";
+            string ifcPath = "D:\\Gantt Test\\Revit.ifc";
+
+            xmlDoc.Load(xmlPath);
+
+            //DateTime date = DateTime.Parse("2022-09-25");
+
+            //AttributeHandler.Expand(xmlDoc, 5, false);
+
+            //Task task1 = new Task(xmlDoc, "Testing", "false", "2022-09-25", "3", "0", "true");
+
+            //string test = task1.id;
+
+            //EditGan.AddTask(xmlDoc, task1);
+
+            List<Task> ganTasks = GanAPI.LoadAllTasks(xmlDoc);
+
+            //ganTasks.ForEach(task => Task.printTask(task));
+
+            List<Task> ifcTasks = new List<Task>();
+
+            List<Task> allTasks = new List<Task>();
+
+
+            //Column column1 = new Column("tpc1", "Unit", "50", "9", "custom", "text", "");
+
+            //GanAPI.AddColumn(xmlDoc, column1);
+
+            //Depend depend1 = new Depend("9", "2", "0", "Strong");
+
+            //GanAPI.AddDepend(xmlDoc, depend1, ganTasks[9]);
+
+            double area = 0;
+
+            IIfcValue area1;
+
+            allTasks.AddRange(ganTasks);
+
+            List<IfcObjects> objects = new List<IfcObjects>();
+            
+            using (IfcStore model = IfcStore.Open(ifcPath))
+            {
+                var walls = model.Instances.OfType<IIfcWall>().ToList();
+
+                foreach (var wall in walls)
+                {
+                    area1 = IfcAPI.GetProperty(wall, "Area");
+
+                    if (area1 == null)
+                    {
+                        area = 0;
+                    }
+                    else
+                    {
+                        area = double.Parse(area1.ToString().Replace(".",","));
+                    }
+
+                    objects.Add(new IfcObjects()
+                    {
+                        id = wall.GlobalId.ToString(),
+                        name = wall.Name.ToString().Substring(0, wall.Name.ToString().LastIndexOf(":")),
+                        unit = "m2",
+                        value = area,
+                    });
+
+                    //Console.WriteLine(wall.GlobalId);
+                    //Console.WriteLine(wall.Name.ToString().Substring(0, wall.Name.ToString().LastIndexOf(":")));
+                    //Console.WriteLine(IfcAPI.GetProperty(wall, "Area"));
+                    //Console.WriteLine(IfcAPI.GetProperty(wall, "Volume"));
+                    //Console.WriteLine(IfcAPI.GetProperty(wall, "Length"));
+                    //Console.WriteLine(IfcAPI.GetProperty(wall, "Gross Area"));
+                    //Console.WriteLine("------------------------------------------");
+                    //Console.WriteLine(wall);
+                    //Console.WriteLine("-------------------------------------------------------------------------------------------------------------");
+
+                }
+
+                var ab = objects.GroupBy(x => x.name).Select(x => x.First()).ToList();
+
+                //foreach (var ob in objects)
+                //{
+                //    IfcObjects.printIfcObject(ob);
+                //}
+
+
+                
+
+                foreach (var ob1 in ab)
+                {
+                    
+                    ob1.value = 0;
+                    foreach(var ob2 in objects)
+                    {
+                        if(ob1.name == ob2.name)
+                        {
+                            
+                            ob1.value = ob1.value + ob2.value;
+                        }
+
+                    }
+                }
+
+                foreach (var b in ab)
+                {
+                    IfcObjects.printIfcObject(b);
+                }
+
+                Task ta;
+
+                foreach (var obj in ab)
+                {
+                    ta = new Task(allTasks, obj.name, "false", "2022-09-30", Math.Round(obj.value).ToString(), "0", "true");
+                    ifcTasks.Add(ta);
+                    allTasks.Add(ta);
+                }
+
+                foreach (var t in ifcTasks)
+                {
+                    GanAPI.AddTask(xmlDoc, t, ganTasks[0]);
+                }
+
+
+                //string h = "";
+
+                //double v = 0;
+
+                //double area = 0;
+                //IIfcValue area1;
+
+                //Task t;
+
+
+
+
+                //foreach(var wall in walls)
+                //{
+                //    string n = wall.Name.ToString().Substring(0, wall.Name.ToString().LastIndexOf(":"));
+
+
+                //    area1 = IfcAPI.GetProperty(wall, "Area");
+
+                //    if (area1 == null)
+                //    {
+                //        area = 0;
+                //    }
+                //    else
+                //    {
+                //        area = double.Parse(IfcAPI.GetProperty(wall, "Area").ToString());
+                //    }
+
+                //    if (n == h)
+                //    {
+                //        v = v + area;
+
+                //        h = n;
+                //    }
+                //    else
+                //    {
+                //        t = new Task(allTasks,
+                //            wall.Name.ToString().Substring(0, wall.Name.ToString().LastIndexOf(":")),
+                //            "false",
+                //            "2022-09-28",
+                //            Math.Round(v).ToString(),
+                //            "0",
+                //            "true");
+
+                //        ifcTasks.Add(t);
+                //        allTasks.Add(t);
+
+                //        v = area;
+                //    }
+
+
+
+
+
+
+
+
+
+
+                //}
+                //Console.WriteLine(walls.Count);
+
+
+            }
+
+            //foreach (var t in ifcTasks)
+            //{
+            //    GanAPI.AddTask(xmlDoc, t);
+            //}
+            
+
+            //0hFm8JzRf0Av5DNSToaTC_
+
+            
+
+
+            //allTasks.ForEach(task => Task.printTask(task));
+
+
+
+
+            //Console.WriteLine(test);
+            Console.ReadLine();
+
+            xmlDoc.Save(xmlPath);
+        }
+    }
+}
