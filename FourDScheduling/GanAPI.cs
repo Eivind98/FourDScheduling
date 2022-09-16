@@ -188,7 +188,7 @@ namespace FourDScheduling
 
         }
 
-        public static void AddDepend(XmlDocument xmlDoc, Depend depend, Task task)
+        public static void AddDepend(XmlDocument xmlDoc, Depend depend, Task parentTask)
         {
             XmlNodeList nodes = xmlDoc.GetElementsByTagName("task");
             XmlNode node = null;
@@ -196,7 +196,7 @@ namespace FourDScheduling
             foreach(XmlNode n in nodes)
             {
                 
-                if(n.Attributes["id"].Value == task.id)
+                if(n.Attributes["id"].Value == parentTask.id)
                 {
                     node = n;
                     break;

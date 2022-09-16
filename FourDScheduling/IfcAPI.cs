@@ -86,7 +86,60 @@ namespace FourDScheduling
         }
 
 
+        public static List<IfcObjects> CreateObjects(IfcStore model)
+        {
+            double area = 0;
+            IIfcValue areaTest;
+            List<IfcObjects> allObjects = new List<IfcObjects>();
 
+            var wallObjects = model.Instances.OfType<IIfcWall>().ToList();
+
+            foreach (var obj in wallObjects)
+            {
+                areaTest = IfcAPI.GetProperty(obj, "Area");
+                //area1 = IfcAPI.GetArea(wall);
+                if (areaTest == null)
+                {
+                    area = 0;
+                }
+                else
+                {
+                    area = double.Parse(areaTest.ToString().Replace(".", ","));
+                }
+
+                allObjects.Add(new IfcObjects()
+                {
+                    id = obj.GlobalId.ToString(),
+                    name = obj.Name.ToString().Substring(0, obj.Name.ToString().LastIndexOf(":")),
+                    unit = "m2",
+                    value = area,
+                });
+            }
+
+            var typeObjects = allObjects.GroupBy(x => x.name).Select(x => x.First()).ToList();
+
+            foreach (var ob1 in typeObjects)
+            {
+
+                ob1.value = 0;
+                foreach (var ob2 in allObjects)
+                {
+                    if (ob1.name == ob2.name)
+                    {
+
+                        ob1.value = ob1.value + ob2.value;
+                    }
+
+                }
+            }
+
+
+
+
+
+            return typeObjects;
+
+        }
 
 
     }
