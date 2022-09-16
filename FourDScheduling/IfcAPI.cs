@@ -12,6 +12,7 @@ namespace FourDScheduling
 {
     public class IfcAPI
     {
+        //from another project
         public static IIfcValue GetArea(IIfcProduct product)
         {
             //try to get the value from quantities first
@@ -44,6 +45,7 @@ namespace FourDScheduling
             return GetProperty(product, "Area");
         }
 
+        //from another project
         public static IIfcValue GetVolume(IIfcProduct product)
         {
             var volume = product.IsDefinedBy
@@ -57,6 +59,7 @@ namespace FourDScheduling
             return GetProperty(product, "Volume");
         }
 
+        //from another project but only usable one
         public static IIfcValue GetProperty(IIfcProduct product, string name)
         {
             return
@@ -85,13 +88,15 @@ namespace FourDScheduling
                 .FirstOrDefault()?.NominalValue;
         }
 
-
-        public static List<IfcObjects> CreateObjects(IfcStore model)
+        //loading all ifc objects
+        public static List<IfcObjects> LoadIfcObjects(IfcStore model)
         {
+            //creating variables
             double area = 0;
             IIfcValue areaTest;
             List<IfcObjects> allObjects = new List<IfcObjects>();
 
+            //
             var wallObjects = model.Instances.OfType<IIfcWall>().ToList();
 
             foreach (var obj in wallObjects)
@@ -109,25 +114,25 @@ namespace FourDScheduling
 
                 allObjects.Add(new IfcObjects()
                 {
-                    id = obj.GlobalId.ToString(),
-                    name = obj.Name.ToString().Substring(0, obj.Name.ToString().LastIndexOf(":")),
-                    unit = "m2",
-                    value = area,
+                    Id = obj.GlobalId.ToString(),
+                    Name = obj.Name.ToString().Substring(0, obj.Name.ToString().LastIndexOf(":")),
+                    Unit = "m2",
+                    Value = area,
                 });
             }
 
-            var typeObjects = allObjects.GroupBy(x => x.name).Select(x => x.First()).ToList();
+            var typeObjects = allObjects.GroupBy(x => x.Name).Select(x => x.First()).ToList();
 
             foreach (var ob1 in typeObjects)
             {
 
-                ob1.value = 0;
+                ob1.Value = 0;
                 foreach (var ob2 in allObjects)
                 {
-                    if (ob1.name == ob2.name)
+                    if (ob1.Name == ob2.Name)
                     {
 
-                        ob1.value = ob1.value + ob2.value;
+                        ob1.Value = ob1.Value + ob2.Value;
                     }
 
                 }

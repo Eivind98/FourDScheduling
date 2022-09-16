@@ -9,6 +9,7 @@ namespace FourDScheduling
 {
     public class GanAPI
     {
+        //adding task to xmldocument
         public static void AddTask(XmlDocument xmlDoc, Task taskName)
         {
             XmlNodeList nodes = xmlDoc.GetElementsByTagName("tasks");
@@ -18,36 +19,37 @@ namespace FourDScheduling
             node.AppendChild(ele);
 
             XmlAttribute aId = xmlDoc.CreateAttribute("id");
-            aId.Value = taskName.id;
+            aId.Value = taskName.Id;
             ele.Attributes.Append(aId);
 
             XmlAttribute aName = xmlDoc.CreateAttribute("name");
-            aName.Value = taskName.name;
+            aName.Value = taskName.Name;
             ele.Attributes.Append(aName);
 
             XmlAttribute aMeeting = xmlDoc.CreateAttribute("meeting");
-            aMeeting.Value = taskName.meeting;
+            aMeeting.Value = taskName.Meeting;
             ele.Attributes.Append(aMeeting);
 
             XmlAttribute aStart = xmlDoc.CreateAttribute("start");
-            aStart.Value = taskName.start;
+            aStart.Value = taskName.Start;
             ele.Attributes.Append(aStart);
 
             XmlAttribute aDuration = xmlDoc.CreateAttribute("duration");
-            aDuration.Value = taskName.duration;
+            aDuration.Value = taskName.Duration;
             ele.Attributes.Append(aDuration);
 
             XmlAttribute aComplete = xmlDoc.CreateAttribute("complete");
-            aComplete.Value = taskName.complete;
+            aComplete.Value = taskName.Complete;
             ele.Attributes.Append(aComplete);
 
             XmlAttribute aExpand = xmlDoc.CreateAttribute("expand");
-            aExpand.Value = taskName.expand;
+            aExpand.Value = taskName.Expand;
             ele.Attributes.Append(aExpand);
 
 
         }
 
+        //add task to xml document to a parent task
         public static void AddTask(XmlDocument xmlDoc, Task taskName, Task parentTask)
         {
             XmlNodeList nodes = xmlDoc.GetElementsByTagName("task");
@@ -56,7 +58,7 @@ namespace FourDScheduling
             foreach (XmlNode n in nodes)
             {
 
-                if (n.Attributes["id"].Value == parentTask.id)
+                if (n.Attributes["id"].Value == parentTask.Id)
                 {
                     node = n;
                     break;
@@ -70,38 +72,35 @@ namespace FourDScheduling
             node.AppendChild(ele);
 
             XmlAttribute aId = xmlDoc.CreateAttribute("id");
-            aId.Value = taskName.id;
+            aId.Value = taskName.Id;
             ele.Attributes.Append(aId);
 
             XmlAttribute aName = xmlDoc.CreateAttribute("name");
-            aName.Value = taskName.name;
+            aName.Value = taskName.Name;
             ele.Attributes.Append(aName);
 
             XmlAttribute aMeeting = xmlDoc.CreateAttribute("meeting");
-            aMeeting.Value = taskName.meeting;
+            aMeeting.Value = taskName.Meeting;
             ele.Attributes.Append(aMeeting);
 
             XmlAttribute aStart = xmlDoc.CreateAttribute("start");
-            aStart.Value = taskName.start;
+            aStart.Value = taskName.Start;
             ele.Attributes.Append(aStart);
 
             XmlAttribute aDuration = xmlDoc.CreateAttribute("duration");
-            aDuration.Value = taskName.duration;
+            aDuration.Value = taskName.Duration;
             ele.Attributes.Append(aDuration);
 
             XmlAttribute aComplete = xmlDoc.CreateAttribute("complete");
-            aComplete.Value = taskName.complete;
+            aComplete.Value = taskName.Complete;
             ele.Attributes.Append(aComplete);
 
             XmlAttribute aExpand = xmlDoc.CreateAttribute("expand");
-            aExpand.Value = taskName.expand;
+            aExpand.Value = taskName.Expand;
             ele.Attributes.Append(aExpand);
 
 
         }
-
-
-
 
 
 
@@ -124,13 +123,9 @@ namespace FourDScheduling
                     n.Attributes["expand"].Value
                     ));
 
-
             }
 
-
-
             return tasks;
-
 
         }
 
@@ -143,19 +138,19 @@ namespace FourDScheduling
             node.AppendChild(ele);
 
             XmlAttribute aId = xmlDoc.CreateAttribute("id");
-            aId.Value = column.id;
+            aId.Value = column.Id;
             ele.Attributes.Append(aId);
 
             XmlAttribute aName = xmlDoc.CreateAttribute("name");
-            aName.Value = column.name;
+            aName.Value = column.Name;
             ele.Attributes.Append(aName);
 
             XmlAttribute aWidth = xmlDoc.CreateAttribute("width");
-            aWidth.Value = column.width;
+            aWidth.Value = column.Width;
             ele.Attributes.Append(aWidth);
 
             XmlAttribute aOrder = xmlDoc.CreateAttribute("order");
-            aOrder.Value = column.order;
+            aOrder.Value = column.Order;
             ele.Attributes.Append(aOrder);
 
 
@@ -167,26 +162,81 @@ namespace FourDScheduling
             propertyNode.AppendChild(ele1);
 
             XmlAttribute aIdProperty = xmlDoc.CreateAttribute("id");
-            aIdProperty.Value = column.id;
+            aIdProperty.Value = column.Id;
             ele1.Attributes.Append(aIdProperty);
 
             XmlAttribute aNameProperty = xmlDoc.CreateAttribute("name");
-            aNameProperty.Value = column.name;
+            aNameProperty.Value = column.Name;
             ele1.Attributes.Append(aNameProperty);
 
             XmlAttribute aTypeProperty = xmlDoc.CreateAttribute("type");
-            aTypeProperty.Value = column.type;
+            aTypeProperty.Value = column.Type;
             ele1.Attributes.Append(aTypeProperty);
 
             XmlAttribute aValuetextProperty = xmlDoc.CreateAttribute("valuetype");
-            aValuetextProperty.Value = column.valuetype;
+            aValuetextProperty.Value = column.Valuetype;
             ele1.Attributes.Append(aValuetextProperty);
 
             XmlAttribute aDefaultvalueProperty = xmlDoc.CreateAttribute("defaultvalue");
-            aDefaultvalueProperty.Value = column.defaultvalue;
+            aDefaultvalueProperty.Value = column.Defaultvalue;
             ele1.Attributes.Append(aDefaultvalueProperty);
 
         }
+
+        public static List<Column> LoadAllColumns(XmlDocument xmlDoc)
+        {
+            
+            XmlNodeList nodeListField = xmlDoc.GetElementsByTagName("view")[0].ChildNodes;
+            
+            XmlNodeList nodeListTaskproperty = xmlDoc.GetElementsByTagName("taskproperty");
+            List<Column> columns = new List<Column>();
+
+            foreach (XmlNode node in nodeListField)
+            {
+                XmlNode taskpropertyNode = null;
+                foreach (XmlNode node2 in nodeListTaskproperty)
+                {
+                    if(node.Attributes["id"].Value == node2.Attributes["id"].Value)
+                    {
+                        taskpropertyNode = node2;
+                        break;
+                    }
+
+                }
+
+                
+                if(node.Name == "field")
+                {
+                    if (taskpropertyNode != null)
+                    {
+                        columns.Add(new Column(
+                        node.Attributes["id"].Value,
+                        node.Attributes["name"].Value,
+                        node.Attributes["width"].Value,
+                        node.Attributes["order"].Value,
+                        taskpropertyNode.Attributes["valuetype"].Value,
+                        ""
+                        ));
+                    }
+                    else
+                    {
+                        columns.Add(new Column(
+                        node.Attributes["id"].Value,
+                        node.Attributes["name"].Value,
+                        node.Attributes["width"].Value,
+                        node.Attributes["order"].Value,
+                        "",
+                        ""
+                        ));
+                    }
+                }
+
+            }
+
+            return columns;
+        }
+
+
 
         public static void AddDepend(XmlDocument xmlDoc, Depend depend, Task parentTask)
         {
@@ -196,7 +246,7 @@ namespace FourDScheduling
             foreach(XmlNode n in nodes)
             {
                 
-                if(n.Attributes["id"].Value == parentTask.id)
+                if(n.Attributes["id"].Value == parentTask.Id)
                 {
                     node = n;
                     break;
@@ -209,29 +259,27 @@ namespace FourDScheduling
             node.AppendChild(ele);
 
             XmlAttribute aId = xmlDoc.CreateAttribute("id");
-            aId.Value = depend.id;
+            aId.Value = depend.Id;
             ele.Attributes.Append(aId);
 
             XmlAttribute aType = xmlDoc.CreateAttribute("type");
-            aType.Value = depend.type;
+            aType.Value = depend.Type;
             ele.Attributes.Append(aType);
 
             XmlAttribute aDifference = xmlDoc.CreateAttribute("difference");
-            aDifference.Value = depend.difference;
+            aDifference.Value = depend.Difference;
             ele.Attributes.Append(aDifference);
 
             XmlAttribute aHardness = xmlDoc.CreateAttribute("hardness");
-            aHardness.Value = depend.hardness;
+            aHardness.Value = depend.Hardness;
             ele.Attributes.Append(aHardness);
-
-            
-
 
         }
 
 
 
 
+        //from here and down probably not necessary
         public static void EditId(XmlDocument xmlDoc, int idOfTask, int id)
         {
             XmlNode node = xmlDoc.SelectSingleNode($"project/tasks/task[@id='{idOfTask}']");

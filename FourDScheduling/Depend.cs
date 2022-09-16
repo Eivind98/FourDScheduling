@@ -8,29 +8,29 @@ namespace FourDScheduling
 {
     public class Depend
     {
-        public string id { get; }
-        public string type { get; set; }
-        public string difference { get; set; }
-        public string hardness { get; set; }
+        public string Id { get; }
+        public string Type { get; set; }
+        public string Difference { get; set; }
+        public string Hardness { get; set; }
 
 
         public Depend(string aId, string aType, string aDifference, string aHardness)
         {
 
-            id = aId;
-            type = aType;
-            difference = aDifference;
-            hardness = aHardness;
+            Id = aId;
+            Type = aType;
+            Difference = aDifference;
+            Hardness = aHardness;
 
         }
 
 
-        public static void printDepend(Depend depend)
+        public static void PrintDepend(Depend depend)
         {
-            Console.WriteLine(depend.id);
-            Console.WriteLine(depend.type);
-            Console.WriteLine(depend.difference);
-            Console.WriteLine(depend.hardness);
+            Console.WriteLine(depend.Id);
+            Console.WriteLine(depend.Type);
+            Console.WriteLine(depend.Difference);
+            Console.WriteLine(depend.Hardness);
             Console.WriteLine("------------");
 
 

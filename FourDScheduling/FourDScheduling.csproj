@@ -104,7 +104,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttributeHandler.cs" />
     <Compile Include="Column.cs" />
     <Compile Include="Depend.cs" />
     <Compile Include="GanAPI.cs" />
