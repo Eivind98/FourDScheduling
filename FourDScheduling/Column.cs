@@ -30,6 +30,59 @@ namespace FourDScheduling
 
         }
 
+        public Column(List<Column> columns, string aName, string aWidth, string aValuetype, string aDefaultvalue)
+        {
+
+            int i = 0;
+            int tempInt = 0;
+
+            while (columns.Count > i)
+            {
+                if (columns[i].Id == "tpc" + tempInt.ToString())
+                {
+                    tempInt++;
+                    i = 0;
+                }
+                else
+                {
+                    i++;
+                }
+
+            }
+
+            int a = 0;
+            int tempInta = 0;
+
+            while (columns.Count > a)
+            {
+                if (columns[a].Order == tempInta.ToString())
+                {
+                    tempInta++;
+                    a = 0;
+                }
+                else
+                {
+                    a++;
+                }
+
+            }
+
+
+
+            Id = "tpc" + i.ToString();
+            Name = aName;
+            Width = aWidth;
+            Order = tempInta.ToString();
+            Type = "custom";
+            Valuetype = aValuetype;
+            Defaultvalue = aDefaultvalue;
+
+        }
+
+
+
+
+
 
         public static void PrintColumn(Column column)
         {

@@ -17,6 +17,10 @@ namespace FourDScheduling
         public string Duration { get; set; }
         public string Complete { get; set; }
         public string Expand { get; set; }
+        public string Classification { get; set; }
+        public string Unit { get; set; }
+        public string Quantity { get; set; }
+        public string HoursPerQuantity { get; set; }
 
 
         public Task(List<Task> tasks, string aName, string aMeeting, string aStart, string aDuration, string aComplete, string aExpand)

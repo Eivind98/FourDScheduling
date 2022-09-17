@@ -8,13 +8,53 @@ using Xbim.Ifc;
 using System.Diagnostics;
 using System.IO;
 using Xbim.Ifc4.Interfaces;
+using System.Xml.Serialization;
 
 namespace FourDScheduling
 {
     public class Program
     {
+
+        
+        public static void PrintNumber(Component comp)
+        {
+            if (!string.IsNullOrEmpty(comp.Number))
+            {
+                Console.WriteLine(comp.Number);
+            }
+            if (comp.Component1 == null) return;
+            foreach (var child in comp.Component1)
+            {
+                PrintNumber(child);
+            }
+        }
+
+
         static void Main(string[] args)
         {
+            var file = File.Open("D:\\Gantt Test\\SigmaData.xml", FileMode.Open);
+            var sigma = (SigmaFile) new XmlSerializer(typeof(SigmaFile)).Deserialize(file);
+
+            var test = sigma.ProjectData.ComponentData.Component;
+
+            foreach (var comp in sigma.ProjectData.ComponentData.Component)
+            {
+                PrintNumber(comp);
+            }
+
+
+            Console.WriteLine(test);
+
+            var file1 = File.Open("D:\\Gantt Test\\SigmaData1.xml", FileMode.OpenOrCreate);
+            new XmlSerializer(typeof(SigmaFile)).Serialize(file1, sigma);
+
+            file1.Close();
+
+
+
+
+
+
             //Creating necessary variables
             XmlDocument xmlDoc = new XmlDocument();
             List<Column> newColumns = new List<Column>();
@@ -27,11 +67,6 @@ namespace FourDScheduling
             xmlDoc.Load(xmlPath);
             //ifcDoc.Load(ifcPath);
             
-
-            //Creating custom Columns for final 
-            newColumns.Add(new Column("tpc0", "Classification", "100", "9", "Text", ""));
-            newColumns.Add(new Column("tpc1", "Unit", "50", "10", "Text", ""));
-            newColumns.Add(new Column("tpc2", "Value", "55", "11", "Text", ""));
 
             //Creating Lists for tasks.
             //ganTasks is tasks loaded from xml file. Used for making sure not to import tasks to xml file that are already there 
@@ -54,11 +89,39 @@ namespace FourDScheduling
             }
 
 
+            //Internally creating custom Columns for final document
+            Column ClassificationColumn = new Column(loadedColumns, "Classification", "100", "Text", "");
+            loadedColumns.Add(ClassificationColumn);
+            newColumns.Add(ClassificationColumn);
+
+            Column UnitColumn = new Column(loadedColumns, "Unit", "50", "Text", "");
+            loadedColumns.Add(UnitColumn);
+            newColumns.Add(UnitColumn);
+
+            Column QuantityColumn = new Column(loadedColumns, "Quantity", "60", "Text", "");
+            loadedColumns.Add(QuantityColumn);
+            newColumns.Add(QuantityColumn);
+
+            Column HoursColumn = new Column(loadedColumns, "Hours/Quantity", "100", "Text", "");
+            loadedColumns.Add(HoursColumn);
+            newColumns.Add(HoursColumn);
+
+            Console.WriteLine("-------------------------------------------------------");
+
+            foreach (Column column in newColumns)
+            {
+                Column.PrintColumn(column);
+                GanAPI.AddColumn(xmlDoc, column);
+            }
+
+
+
+
             //List<IfcObjects> objects = new List<IfcObjects>();
 
             //using (IfcStore model = IfcStore.Open(ifcPath))
             //{
-                
+
             //    objects = IfcAPI.LoadIfcObjects(model);
 
             //    foreach (var b in objects)

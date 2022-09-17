@@ -10,7 +10,7 @@ namespace FourDScheduling
     public class GanAPI
     {
         //adding task to xmldocument
-        public static void AddTask(XmlDocument xmlDoc, Task taskName)
+        public static void AddTask(XmlDocument xmlDoc, List<Column> existingColumns, Task taskName)
         {
             XmlNodeList nodes = xmlDoc.GetElementsByTagName("tasks");
             XmlNode node = nodes[0];
@@ -46,11 +46,36 @@ namespace FourDScheduling
             aExpand.Value = taskName.Expand;
             ele.Attributes.Append(aExpand);
 
+            if (taskName.Classification != "")
+            {
+                string id = "";
+                foreach(Column c in existingColumns)
+                {
+                    if (c.Name == "Classification")
+                    {
+                        id = c.Id;
+                    }
+                }
+
+                XmlElement customproperty = xmlDoc.CreateElement("customproperty");
+                ele.AppendChild(customproperty);
+
+                XmlAttribute taskpropertyId = xmlDoc.CreateAttribute("taskproperty-id");
+                taskpropertyId.Value = id;
+                customproperty.Attributes.Append(taskpropertyId);
+
+                XmlAttribute value = xmlDoc.CreateAttribute("value");
+                value.Value = taskName.Classification;
+                customproperty.Attributes.Append(value);
+
+            }
+
+
 
         }
 
         //add task to xml document to a parent task
-        public static void AddTask(XmlDocument xmlDoc, Task taskName, Task parentTask)
+        public static void AddTask(XmlDocument xmlDoc, List<Column> existingColumns, Task taskName, Task parentTask)
         {
             XmlNodeList nodes = xmlDoc.GetElementsByTagName("task");
             XmlNode node = null;
@@ -99,6 +124,30 @@ namespace FourDScheduling
             aExpand.Value = taskName.Expand;
             ele.Attributes.Append(aExpand);
 
+
+            if (taskName.Classification != "")
+            {
+                string id = "";
+                foreach (Column c in existingColumns)
+                {
+                    if (c.Name == "Classification")
+                    {
+                        id = c.Id;
+                    }
+                }
+
+                XmlElement customproperty = xmlDoc.CreateElement("customproperty");
+                ele.AppendChild(customproperty);
+
+                XmlAttribute taskpropertyId = xmlDoc.CreateAttribute("taskproperty-id");
+                taskpropertyId.Value = id;
+                customproperty.Attributes.Append(taskpropertyId);
+
+                XmlAttribute value = xmlDoc.CreateAttribute("value");
+                value.Value = taskName.Classification;
+                customproperty.Attributes.Append(value);
+
+            }
 
         }
 
@@ -351,6 +400,10 @@ namespace FourDScheduling
             node.Attributes["expand"].Value = expand.ToString().ToLower();
 
         }
+
+
+
+
 
     }
 }
