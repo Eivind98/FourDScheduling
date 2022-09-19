@@ -8753,7 +8753,7 @@ public partial class Component
 
     private object categoryField;
 
-    private object unitField;
+    private string unitField;
 
     private object noteField;
 
@@ -9008,7 +9008,7 @@ public partial class Component
     }
 
     /// <remarks/>
-    public object Unit
+    public string Unit
     {
         get
         {

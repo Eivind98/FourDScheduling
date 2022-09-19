@@ -15,6 +15,7 @@ namespace FourDScheduling
         //from another project
         public static IIfcValue GetArea(IIfcProduct product)
         {
+            string name = "NetSideArea";
             //try to get the value from quantities first
             var area =
                 //get all relations which can define property and quantity sets
@@ -31,7 +32,9 @@ namespace FourDScheduling
                 .SelectMany(qset => qset.Quantities)
 
                 //We are only interested in areas 
-                .OfType<IIfcQuantityArea>()
+                .OfType<IIfcQuantityArea>().Where(p =>
+                    string.Equals(p.Name, name, System.StringComparison.OrdinalIgnoreCase) ||
+                    p.Name.ToString().ToLower().Contains(name.ToLower()))
 
                 //We will take the first one. There might obviously be more than one area properties
                 //so you might want to check the name. But we will keep it simple for this example.
@@ -45,19 +48,41 @@ namespace FourDScheduling
             return GetProperty(product, "Area");
         }
 
+        public static IIfcValue GetLength(IIfcProduct product)
+        {
+            string name = "Length";
+            var length = product.IsDefinedBy
+                .SelectMany(r => r.RelatingPropertyDefinition.PropertySetDefinitions)
+                .OfType<IIfcElementQuantity>()
+                .SelectMany(qset => qset.Quantities)
+                .OfType<IIfcQuantityLength>().Where(p =>
+                    string.Equals(p.Name, name, System.StringComparison.OrdinalIgnoreCase) ||
+                    p.Name.ToString().ToLower().Contains(name.ToLower()))
+                .FirstOrDefault()?.LengthValue;
+            if (length != null)
+                return length;
+            return GetProperty(product, "Length");
+        }
+
         //from another project
         public static IIfcValue GetVolume(IIfcProduct product)
         {
+            string name = "NetVolume";
             var volume = product.IsDefinedBy
                 .SelectMany(r => r.RelatingPropertyDefinition.PropertySetDefinitions)
                 .OfType<IIfcElementQuantity>()
                 .SelectMany(qset => qset.Quantities)
-                .OfType<IIfcQuantityVolume>()
+                .OfType<IIfcQuantityVolume>().Where(p =>
+                    string.Equals(p.Name, name, System.StringComparison.OrdinalIgnoreCase) ||
+                    p.Name.ToString().ToLower().Contains(name.ToLower()))
                 .FirstOrDefault()?.VolumeValue;
             if (volume != null)
                 return volume;
             return GetProperty(product, "Volume");
         }
+
+        
+
 
         //from another project but only usable one
         public static IIfcValue GetProperty(IIfcProduct product, string name)
@@ -91,58 +116,76 @@ namespace FourDScheduling
         //loading all ifc objects
         public static List<IfcObjects> LoadIfcObjects(IfcStore model)
         {
-            //creating variables
-            double area = 0;
-            IIfcValue areaTest;
+            //creating variable
             List<IfcObjects> allObjects = new List<IfcObjects>();
 
-            //
-            var wallObjects = model.Instances.OfType<IIfcWall>().ToList();
+            var requiredProducts = new IIfcProduct[0]
+                .Concat(model.Instances.OfType<IIfcWindow>())
+                .Concat(model.Instances.OfType<IIfcWall>())
+                .Concat(model.Instances.OfType<IIfcDoor>())
+                .Concat(model.Instances.OfType<IIfcSlab>())
+                .Concat(model.Instances.OfType<IIfcRoof>())
+                .Concat(model.Instances.OfType<IIfcFooting>());
+            
+            decimal length;
+            decimal area;
+            decimal volume;
 
-            foreach (var obj in wallObjects)
+            IIfcValue lengthTest;
+            IIfcValue areaTest;
+            IIfcValue volumeTest;
+
+
+            foreach (var obj in requiredProducts)
             {
-                areaTest = IfcAPI.GetProperty(obj, "Area");
+                lengthTest = IfcAPI.GetLength(obj);
+                if (lengthTest == null) length = 0; else length = decimal.Parse(lengthTest.ToString().Replace(".", ","));
+
+                areaTest = IfcAPI.GetArea(obj);
                 //area1 = IfcAPI.GetArea(wall);
-                if (areaTest == null)
-                {
-                    area = 0;
-                }
-                else
-                {
-                    area = double.Parse(areaTest.ToString().Replace(".", ","));
-                }
+                if (areaTest == null) area = 0; else area = decimal.Parse(areaTest.ToString().Replace(".", ","));
+
+                volumeTest = IfcAPI.GetVolume(obj);
+                if (volumeTest == null) volume = 0; else volume = decimal.Parse(volumeTest.ToString().Replace(".", ","));
+
+                
 
                 allObjects.Add(new IfcObjects()
                 {
                     Id = obj.GlobalId.ToString(),
-                    Name = obj.Name.ToString().Substring(0, obj.Name.ToString().LastIndexOf(":")),
-                    Unit = "m2",
-                    Value = area,
+                    Name = obj.Name.ToString().Substring(0, obj.Name.ToString().LastIndexOf(":")) + " - " + " - " + GetProperty(obj, "Classification"),
+                    Length = length,
+                    Area = area,
+                    Volume = volume
                 });
             }
 
-            var typeObjects = allObjects.GroupBy(x => x.Name).Select(x => x.First()).ToList();
+            
+            
+            
 
-            foreach (var ob1 in typeObjects)
-            {
+            //var typeObjects = allObjects.GroupBy(x => x.Name).Select(x => x.First()).ToList();
 
-                ob1.Value = 0;
-                foreach (var ob2 in allObjects)
-                {
-                    if (ob1.Name == ob2.Name)
-                    {
+            //foreach (var ob1 in typeObjects)
+            //{
 
-                        ob1.Value = ob1.Value + ob2.Value;
-                    }
+            //    ob1.Area = 0;
+            //    foreach (var ob2 in allObjects)
+            //    {
+            //        if (ob1.Name == ob2.Name)
+            //        {
 
-                }
-            }
+            //            ob1.Area = ob1.Area + ob2.Area;
+            //        }
+
+            //    }
+            //}
 
 
 
 
 
-            return typeObjects;
+            return allObjects;
 
         }
 
