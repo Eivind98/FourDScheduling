@@ -31,11 +31,11 @@ namespace FourDScheduling
             foreach (var task in listOfSigTasks)
             {
 
-                Console.WriteLine(task.Classification);
-                Console.WriteLine(task.Name);
-                Console.WriteLine(task.Unit);
-                Console.WriteLine(task.Quantity);
-                Console.WriteLine("---------------------------------------------------------");
+                //Console.WriteLine(task.Classification);
+                //Console.WriteLine(task.Name);
+                //Console.WriteLine(task.Unit);
+                //Console.WriteLine(task.Quantity);
+                //Console.WriteLine("---------------------------------------------------------");
 
             }
 

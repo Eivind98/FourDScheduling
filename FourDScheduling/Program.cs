@@ -20,26 +20,48 @@ namespace FourDScheduling
         static void Main(string[] args)
         {
             
+            string ifcPath = "D:\\Gantt Test\\Revit.ifc";
+            string xmlPath = "D:\\Gantt Test\\empty.gan";
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlPath);
+
+            List<SigTask> sigmaTasks = SigAPI.LoadAllTasks("D:\\Gantt Test\\SigmaData.xml");
+            List<IfcObjects> objects = IfcAPI.LoadIfcObjects(ifcPath);
+
+            var summary = objects.GroupBy(x => x.Name).Select(g =>
+            {
+                var first = g.First();
+                return new IfcObjects(first.Name)
+                {
+                    Length = g.Sum(x => x.Length),
+                    Area = g.Sum(x => x.Area),
+                    Volume = g.Sum(x => x.Volume),
+                    Count = g.Sum(x => x.Count)
+                };
+            });
+
+
+            foreach (var b in summary)
+            {
+                IfcObjects.PrintIfcObject(b);
+            }
+
+            Console.ReadLine();
+
             
-
-            //SigAPI.LoadAllTasks("D:\\Gantt Test\\SigmaData.xml");
-            
-
-
 
 
 
 
             //Creating necessary variables
-            XmlDocument xmlDoc = new XmlDocument();
-            List<Column> newColumns = new List<Column>();
+            
+            //List<Column> newColumns = new List<Column>();
 
             //Establishing the paths to files
-            string xmlPath = "D:\\Gantt Test\\empty.gan";
-            string ifcPath = "D:\\Gantt Test\\Revit.ifc";
+            
 
             //Load the necessary files into memory
-            xmlDoc.Load(xmlPath);
+            
             //ifcDoc.Load(ifcPath);
             
 
@@ -89,32 +111,13 @@ namespace FourDScheduling
             //    GanAPI.AddColumn(xmlDoc, column);
             //}
 
+            
 
+            
 
+            
 
-            List<IfcObjects> objects = new List<IfcObjects>();
-
-            using (IfcStore model = IfcStore.Open(ifcPath))
-            {
-
-                objects = IfcAPI.LoadIfcObjects(model);
-
-                foreach (var b in objects)
-                {
-                    IfcObjects.PrintIfcObject(b);
-                }
-
-                
-                
-
-                
-
-                //foreach (var t in ifcTasks)
-                //{
-                //    GanAPI.AddTask(xmlDoc, t);
-                //}
-
-            }
+            
 
             //0hFm8JzRf0Av5DNSToaTC_
 
