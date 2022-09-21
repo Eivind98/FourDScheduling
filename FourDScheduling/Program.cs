@@ -28,17 +28,9 @@ namespace FourDScheduling
             List<SigTask> sigmaTasks = SigAPI.LoadAllTasks("D:\\Gantt Test\\SigmaData.xml");
             List<IfcObjects> objects = IfcAPI.LoadIfcObjects(ifcPath);
 
-            var summary = objects.GroupBy(x => x.Name).Select(g =>
-            {
-                var first = g.First();
-                return new IfcObjects(first.Name)
-                {
-                    Length = g.Sum(x => x.Length),
-                    Area = g.Sum(x => x.Area),
-                    Volume = g.Sum(x => x.Volume),
-                    Count = g.Sum(x => x.Count)
-                };
-            });
+            var summary = objects
+                .GroupBy(x => x.Name)
+                .Select(g => new IfcObjects(g.ToList()));
 
 
             foreach (var b in summary)

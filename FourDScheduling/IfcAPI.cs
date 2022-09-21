@@ -40,7 +40,7 @@ namespace FourDScheduling
 
 
         //from another project but only usable one
-        public static IIfcValue OldGetProperty(IIfcProduct product, string name)
+        public static IIfcValue GetPropertySingleValue(IIfcProduct product, string name)
         {
             return
                 //get all relations which can define property and quantity sets
