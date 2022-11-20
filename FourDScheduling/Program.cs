@@ -20,7 +20,7 @@ namespace FourDScheduling
     {
 
 
-
+        [STAThread]
         static void Main(string[] args)
         {
 
