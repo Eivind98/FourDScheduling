@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Xbim.Ifc;
+using Xbim.ModelGeometry.Scene;
 
 namespace FourDScheduling
 {
@@ -28,9 +29,20 @@ namespace FourDScheduling
 
             //string ifcPath = "D:\\Gantt Test\\HavL3_K01_N001_ARK.ifc";
 
+            //IfcStore ifcModel = IfcStore.Open(ifcPath);
+
+            
+
+            //var context = new Xbim3DModelContext(ifcModel);
+            //context.CreateContext();
+
+            //drawingControl3D1.Model = ifcModel;
+            //drawingControl3D1.LoadGeometry(ifcModel);
+
+
             //using (var model = IfcStore.Open(ifcPath))
             //{
-
+            //    drawingControl3D1.Model = ifcModel;
             //    drawingControl3D1.LoadGeometry(model);
             //}
 
@@ -39,36 +51,39 @@ namespace FourDScheduling
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            string ifcPath = "D:\\Gantt Test\\HavL3_K01_N001_ARK.ifc";
 
+            IfcStore ifcModel = IfcStore.Open(ifcPath);
+
+
+
+            var context = new Xbim3DModelContext(ifcModel);
+            context.CreateContext();
+
+            drawingControl3D1.Model = ifcModel;
+            drawingControl3D1.LoadGeometry(ifcModel);
         }
 
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            
-            
-            listView1.Clear();
-            //listView2.Items.AddlistView1.SelectedItems[0].Text();
-
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
+        
 
         private void listView1_Click(object sender, EventArgs e)
         {
 
+            //var dude = drawingControl3D1.SelectedEntity.ToString();
+
+            string dude = "SupBro";
+
             listView2.Items.Add("Type ID");
-            listView2.Items[0].SubItems[1].Text = "yobro";
+            listView2.Items[0].SubItems[1].Text = dude;
 
             //listView2.Items[0].Remove();
 
-        }
 
-        private void elementHost1_ChildChanged(object sender, System.Windows.Forms.Integration.ChildChangedEventArgs e)
-        {
 
         }
+
+        
+
+        
     }
 }

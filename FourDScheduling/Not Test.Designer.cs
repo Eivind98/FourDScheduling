@@ -33,9 +33,8 @@
             this.listView2 = new System.Windows.Forms.ListView();
             this.nameIdentification = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueIdentification = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.drawingControl3D1 = new Xbim.Presentation.DrawingControl3D();
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            
+            this.drawingControl3D1 = new Xbim.Presentation.DrawingControl3D();
             this.SuspendLayout();
             // 
             // listView1
