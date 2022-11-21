@@ -86,6 +86,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
@@ -143,11 +144,11 @@
   <ItemGroup>
     <Compile Include="Column.cs" />
     <Compile Include="Depend.cs" />
-    <Compile Include="Not Test.cs">
+    <Compile Include="CreatingSigmaFile.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Not Test.Designer.cs">
-      <DependentUpon>Not Test.cs</DependentUpon>
+    <Compile Include="CreatingSigmaFile.Designer.cs">
+      <DependentUpon>CreatingSigmaFile.cs</DependentUpon>
     </Compile>
     <Compile Include="GanAPI.cs" />
     <Compile Include="IfcAPI.cs" />
@@ -164,8 +165,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Not Test.resx">
-      <DependentUpon>Not Test.cs</DependentUpon>
+    <EmbeddedResource Include="CreatingSigmaFile.resx">
+      <DependentUpon>CreatingSigmaFile.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
