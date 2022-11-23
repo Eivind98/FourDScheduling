@@ -13,9 +13,9 @@ using Xbim.ModelGeometry.Scene;
 
 namespace FourDScheduling
 {
-    public partial class Test : Form
+    public partial class CreateSigmaFile : Form
     {
-        public Test()
+        public CreateSigmaFile()
         {
             
             InitializeComponent();
@@ -35,17 +35,8 @@ namespace FourDScheduling
         {
             btnIFCfile.Text = "D:\\Gantt Test\\HavL3_K01_N001_ARK.ifc";
 
+            LoadingIFCGeometry(btnIFCfile.Text);
 
-
-            IfcStore ifcModel = IfcStore.Open(btnIFCfile.Text);
-
-
-
-            var context = new Xbim3DModelContext(ifcModel);
-            context.CreateContext();
-
-            ifcViewer.Model = ifcModel;
-            ifcViewer.LoadGeometry(ifcModel);
         }
 
         
@@ -71,6 +62,19 @@ namespace FourDScheduling
 
         }
 
+
+        private void LoadingIFCGeometry(string ifcPath)
+        {
+            IfcStore ifcModel = IfcStore.Open(ifcPath);
+
+            var context = new Xbim3DModelContext(ifcModel);
+            context.CreateContext();
+
+            ifcViewer.Model = ifcModel;
+            ifcViewer.LoadGeometry(ifcModel);
+        }
+
+
         private void openFileDialog()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -84,13 +88,7 @@ namespace FourDScheduling
             {
                 btnIFCfile.Text = openFileDialog.FileName;
 
-                IfcStore ifcModel = IfcStore.Open(btnIFCfile.Text);
-
-                var context = new Xbim3DModelContext(ifcModel);
-                context.CreateContext();
-
-                ifcViewer.Model = ifcModel;
-                ifcViewer.LoadGeometry(ifcModel);
+                LoadingIFCGeometry(btnIFCfile.Text);
 
             }
 
@@ -141,6 +139,17 @@ namespace FourDScheduling
         private void btnIFCfile2_Click(object sender, EventArgs e)
         {
             openFileDialog();
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            Hide();
+            MainMenu mainMenu = new MainMenu();
+            mainMenu.ShowDialog();
+
+            
+
+
         }
     }
 }

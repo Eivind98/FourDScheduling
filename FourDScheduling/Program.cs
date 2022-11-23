@@ -25,7 +25,7 @@ namespace FourDScheduling
         {
 
             Application.EnableVisualStyles();
-            Application.Run(new Test());
+            Application.Run(new MainMenu());
 
             /*
             

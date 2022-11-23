@@ -1,6 +1,6 @@
 ﻿namespace FourDScheduling
 {
-    partial class Test
+    partial class CreateSigmaFile
     {
         /// <summary>
         /// Required designer variable.
@@ -265,6 +265,7 @@
             this.btnBack.TabIndex = 6;
             this.btnBack.Text = "Back";
             this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
             // button1
             // 
@@ -301,7 +302,7 @@
             this.btnDirectory2.UseVisualStyleBackColor = true;
             this.btnDirectory2.Click += new System.EventHandler(this.btnDirectory2_Click);
             // 
-            // Test
+            // CreateSigmaFile
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -312,8 +313,10 @@
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(900, 520);
-            this.Name = "Test";
+            this.Name = "CreateSigmaFile";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
