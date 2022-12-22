@@ -35,7 +35,13 @@ namespace FourDScheduling
         {
             btnIFCfile.Text = "D:\\Gantt Test\\HavL3_K01_N001_ARK.ifc";
 
-            LoadingIFCGeometry(btnIFCfile.Text);
+
+            try
+            {
+                LoadingIFCGeometry(btnIFCfile.Text);
+            }
+            catch { }
+            
 
         }
 
