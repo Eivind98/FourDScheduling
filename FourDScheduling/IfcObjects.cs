@@ -26,6 +26,9 @@ namespace FourDScheduling
             Name = n;
             FamilyName = nameRegex.Match(name).Groups[1].Value;
             TypeId = bimSevenAAFromNameRegex.Match(n).Groups[1].Value;
+
+
+
         }
 
         public IfcObjects(List<IfcObjects> g)
