@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -26,18 +27,14 @@ namespace FourDScheduling
             
             InitializeComponent();
             this.listOfElements.CheckBoxes = true;
-            listOfElements.Items.Add("Somethgin");
-            listOfElements.Items[0].SubItems.Add("YOYO");
-
-            identification.Items.Add("Type ID");
-            identification.Items[0].SubItems.Add("Yo");
+            
 
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            btnIFCfile.Text = "D:\\Gantt Test\\HavL3_K01_N001_ARK.ifc";
+            btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\3D.ifc";
 
 
             try
@@ -63,9 +60,28 @@ namespace FourDScheduling
                 List<ListViewItem> listIdentification = new List<ListViewItem>();
                 List<ListViewItem> listQuantities = new List<ListViewItem>();
 
+                string uniqueID = "";
+                string typeID = "";
+                string family = "";
+                string name = "";
+                string IFCType = "";
+                string material = "";
+
+                string netArea = " m2";
+                string grossArea = " m2";
+                string areaOfOpenings = " m2";
+                string length = " m";
+                string thickness = " mm";
+                string volume = " m3";
+                string count = "";
+
+
+
                 if (listOfElements.SelectedItems.Count <= 1)
                 {
                     IfcObjects element = null;
+
+                    
 
                     foreach (var ele in AllInstances)
                     {
@@ -73,31 +89,108 @@ namespace FourDScheduling
                         if (listOfElements.SelectedItems[0].Name == ele.Id)
                         {
                             element = ele;
+                            break;
                         }
                     }
 
-                    listIdentification.Add(AddItemWithSubItem("Unique ID", element.Id));
-                    listIdentification.Add(AddItemWithSubItem("Type ID", element.TypeId));
-                    listIdentification.Add(AddItemWithSubItem("Family", element.FamilyName));
-                    listIdentification.Add(AddItemWithSubItem("Name", element.Name));
-                    listIdentification.Add(AddItemWithSubItem("IFC Type", element.Name));
-                    listIdentification.Add(AddItemWithSubItem("Material", element.Name));
+
+                    uniqueID = element.Id;
+                    typeID = element.TypeId;
+                    family = element.FamilyName;
+                    name = element.Name;
+                    IFCType = "";
+                    material = "";
+
+                    netArea = netArea.Insert(0, Math.Round(element.NetArea, 3).ToString());
+                    grossArea = grossArea.Insert(0, Math.Round(element.GrossArea, 3).ToString());
+                    areaOfOpenings = areaOfOpenings.Insert(0, "0");
+                    length = length.Insert(0, Math.Round(element.Length, 3).ToString());
+                    thickness = thickness.Insert(0, "0");
+                    volume = volume.Insert(0, Math.Round(element.Volume, 3).ToString());
+                    count = count.Insert(0, element.Count.ToString());
 
 
-                    listQuantities.Add(AddItemWithSubItem("Net Area", element.NetArea.ToString()));
-                    listQuantities.Add(AddItemWithSubItem("Gross Area", element.GrossArea.ToString()));
-                    listQuantities.Add(AddItemWithSubItem("Area of Openings", element.NetArea.ToString()));
-                    listQuantities.Add(AddItemWithSubItem("Length", element.Length.ToString()));
-                    listQuantities.Add(AddItemWithSubItem("Thickness", element.Length.ToString()));
-                    listQuantities.Add(AddItemWithSubItem("Volume", element.Volume.ToString()));
-                    listQuantities.Add(AddItemWithSubItem("Count", element.Count.ToString()));
 
 
                 }
                 else
                 {
+                    List<string> uniqueIDList = new List<string>();
+                    List<string> typeIDList = new List<string>();
+                    List<string> familyList = new List<string>();
+                    List<string> nameList = new List<string>();
+                    List<string> IFCTypeList = new List<string>();
+                    List<string> materialList = new List<string>();
+
+                    List<decimal> netAreaList = new List<decimal>();
+                    List<decimal> grossAreaList = new List<decimal>();
+                    List<decimal> areaOfOpeningsList = new List<decimal>();
+                    List<decimal> lengthList = new List<decimal>();
+                    List<decimal> thicknessList = new List<decimal>();
+                    List<decimal> volumeList = new List<decimal>();
+                    List<decimal> countList = new List<decimal>();
+
+
+
+                    foreach (ListViewItem item in listOfElements.SelectedItems)
+                    {
+
+                        foreach (var ele in AllInstances)
+                        {
+
+                            if (item.Name == ele.Id)
+                            {
+
+                                uniqueIDList.Add(ele.Id);
+                                typeIDList.Add(ele.TypeId);
+                                familyList.Add(ele.FamilyName);
+                                nameList.Add(ele.Name);
+
+                                netAreaList.Add(ele.NetArea);
+                                grossAreaList.Add(ele.GrossArea);
+                                areaOfOpeningsList.Add(0);
+                                lengthList.Add(ele.Length);
+                                thicknessList.Add(0);
+                                volumeList.Add(ele.Volume);
+                                countList.Add(ele.Count);
+
+                                break;
+                            }
+                        }
+                    }
+
+                    uniqueID = string.Join(", ",uniqueIDList.ToArray());
+                    typeID = string.Join(", ", typeIDList.ToArray());
+                    family = string.Join(", ", familyList.ToArray());
+                    name = string.Join(", ", nameList.ToArray());
+                    IFCType = string.Join(", ", IFCTypeList.ToArray());
+                    material = string.Join(", ", materialList.ToArray());
+
+                    netArea = netArea.Insert(0, Math.Round(netAreaList.Sum(), 3).ToString());
+                    grossArea = grossArea.Insert(0, Math.Round(grossAreaList.Sum(), 3).ToString());
+                    areaOfOpenings = areaOfOpenings.Insert(0, Math.Round(areaOfOpeningsList.Sum(), 3).ToString());
+                    length = length.Insert(0, Math.Round(lengthList.Sum(), 3).ToString());
+                    thickness = thickness.Insert(0, Math.Round(thicknessList.Sum(), 3).ToString());
+                    volume = volume.Insert(0, Math.Round(volumeList.Sum(), 3).ToString());
+                    count = count.Insert(0, countList.Sum().ToString());
 
                 }
+
+
+                listIdentification.Add(AddItemWithSubItem("Unique ID", uniqueID));
+                listIdentification.Add(AddItemWithSubItem("Type ID", typeID));
+                listIdentification.Add(AddItemWithSubItem("Family", family));
+                listIdentification.Add(AddItemWithSubItem("Name", name));
+                listIdentification.Add(AddItemWithSubItem("IFC Type", IFCType));
+                listIdentification.Add(AddItemWithSubItem("Material", material));
+
+                listQuantities.Add(AddItemWithSubItem("Net Area", netArea));
+                listQuantities.Add(AddItemWithSubItem("Gross Area", grossArea));
+                listQuantities.Add(AddItemWithSubItem("Area of Openings", areaOfOpenings));
+                listQuantities.Add(AddItemWithSubItem("Length", length));
+                listQuantities.Add(AddItemWithSubItem("Thickness", thickness));
+                listQuantities.Add(AddItemWithSubItem("Volume", volume));
+                listQuantities.Add(AddItemWithSubItem("Count", count));
 
 
                 identification.Items.AddRange(listIdentification.ToArray());
@@ -107,8 +200,6 @@ namespace FourDScheduling
                 var selectedElement = listOfElements.SelectedItems[0];
                 var selectedElements = listOfElements.SelectedItems;
 
-
-
             }
             catch
             {
@@ -116,6 +207,8 @@ namespace FourDScheduling
             }
             
         }
+
+
 
         private ListViewItem AddItemWithSubItem(string name, string value)
         {
