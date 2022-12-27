@@ -8,6 +8,9 @@ using System.Diagnostics;
 using System.IO;
 using Xbim.Ifc4.Interfaces;
 using System.Globalization;
+using Microsoft.Isam.Esent.Interop;
+using Xbim.Presentation;
+using Xbim.Common;
 
 namespace FourDScheduling
 {
@@ -136,13 +139,9 @@ namespace FourDScheduling
             
             using (IfcStore model = IfcStore.Open(ifcPath))
             {
-                var requiredProducts = new IIfcProduct[0]
-                .Concat(model.Instances.OfType<IIfcWindow>())
-                .Concat(model.Instances.OfType<IIfcWall>())
-                .Concat(model.Instances.OfType<IIfcDoor>())
-                .Concat(model.Instances.OfType<IIfcSlab>())
-                .Concat(model.Instances.OfType<IIfcRoof>())
-                .Concat(model.Instances.OfType<IIfcFooting>());
+                
+                var requiredProducts = LoadAllProducts(model.Instances);
+                
 
                 return requiredProducts.Select(x => new IfcObjects(x.Name)
                 {
@@ -154,6 +153,38 @@ namespace FourDScheduling
                 }).ToList();
 
             }
+
+        }
+        
+        public static IEnumerable<IIfcProduct> LoadAllProducts(EntitySelection test)
+        {
+
+            var products = new IIfcProduct[0]
+                        .Concat(test.OfType<IIfcWindow>())
+                        .Concat(test.OfType<IIfcWall>())
+                        .Concat(test.OfType<IIfcDoor>())
+                        .Concat(test.OfType<IIfcStairFlight>())
+                        .Concat(test.OfType<IIfcSlab>())
+                        .Concat(test.OfType<IIfcRoof>())
+                        .Concat(test.OfType<IIfcFooting>());
+
+            return products;
+
+        }
+
+        public static IEnumerable<IIfcProduct> LoadAllProducts(IEntityCollection test)
+        {
+
+            var products = new IIfcProduct[0]
+                        .Concat(test.OfType<IIfcWindow>())
+                        .Concat(test.OfType<IIfcWall>())
+                        .Concat(test.OfType<IIfcDoor>())
+                        .Concat(test.OfType<IIfcStairFlight>())
+                        .Concat(test.OfType<IIfcSlab>())
+                        .Concat(test.OfType<IIfcRoof>())
+                        .Concat(test.OfType<IIfcFooting>());
+
+            return products;
 
         }
 

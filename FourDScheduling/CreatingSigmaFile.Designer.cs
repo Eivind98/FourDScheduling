@@ -81,7 +81,6 @@
             this.listOfElements.TabIndex = 1;
             this.listOfElements.UseCompatibleStateImageBehavior = false;
             this.listOfElements.View = System.Windows.Forms.View.Details;
-            this.listOfElements.Click += new System.EventHandler(this.listView1_Click);
             // 
             // name
             // 
@@ -337,6 +336,8 @@
             this.ResumeLayout(false);
 
         }
+
+        
 
         #endregion
         private System.Windows.Forms.ListView listOfElements;

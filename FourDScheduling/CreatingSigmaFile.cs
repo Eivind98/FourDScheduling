@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using Xbim.Ifc;
+using Xbim.Ifc4.Interfaces;
 using Xbim.ModelGeometry.Scene;
 
 namespace FourDScheduling
@@ -27,14 +28,18 @@ namespace FourDScheduling
             
             InitializeComponent();
             this.listOfElements.CheckBoxes = true;
-            
+            this.ifcViewer.SelectedEntityChanged += IfcViewer_SelectedEntityChanged;
+            this.ifcViewer.MouseUp += IfcViewer_MouseUp;
+            this.listOfElements.MouseUp += ListOfElements_MouseUp;
 
 
         }
 
+        
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\3D.ifc";
+            btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\Revit.ifc";
 
 
             try
@@ -48,166 +53,427 @@ namespace FourDScheduling
 
         }
 
-        
-
-        private void listView1_Click(object sender, EventArgs e)
+        private void ListOfElements_MouseUp(object sender, MouseEventArgs e)
         {
             identification.Items.Clear();
             quantities.Items.Clear();
             try
             {
 
-                List<ListViewItem> listIdentification = new List<ListViewItem>();
-                List<ListViewItem> listQuantities = new List<ListViewItem>();
+                List<string> ids = new List<string>();
 
-                string uniqueID = "";
-                string typeID = "";
-                string family = "";
-                string name = "";
-                string IFCType = "";
-                string material = "";
-
-                string netArea = " m2";
-                string grossArea = " m2";
-                string areaOfOpenings = " m2";
-                string length = " m";
-                string thickness = " mm";
-                string volume = " m3";
-                string count = "";
-
-
-
-                if (listOfElements.SelectedItems.Count <= 1)
+                foreach (ListViewItem item in listOfElements.SelectedItems)
                 {
-                    IfcObjects element = null;
-
-                    
-
-                    foreach (var ele in AllInstances)
-                    {
-
-                        if (listOfElements.SelectedItems[0].Name == ele.Id)
-                        {
-                            element = ele;
-                            break;
-                        }
-                    }
-
-
-                    uniqueID = element.Id;
-                    typeID = element.TypeId;
-                    family = element.FamilyName;
-                    name = element.Name;
-                    IFCType = "";
-                    material = "";
-
-                    netArea = netArea.Insert(0, Math.Round(element.NetArea, 3).ToString());
-                    grossArea = grossArea.Insert(0, Math.Round(element.GrossArea, 3).ToString());
-                    areaOfOpenings = areaOfOpenings.Insert(0, "0");
-                    length = length.Insert(0, Math.Round(element.Length, 3).ToString());
-                    thickness = thickness.Insert(0, "0");
-                    volume = volume.Insert(0, Math.Round(element.Volume, 3).ToString());
-                    count = count.Insert(0, element.Count.ToString());
-
-
-
-
-                }
-                else
-                {
-                    List<string> uniqueIDList = new List<string>();
-                    List<string> typeIDList = new List<string>();
-                    List<string> familyList = new List<string>();
-                    List<string> nameList = new List<string>();
-                    List<string> IFCTypeList = new List<string>();
-                    List<string> materialList = new List<string>();
-
-                    List<decimal> netAreaList = new List<decimal>();
-                    List<decimal> grossAreaList = new List<decimal>();
-                    List<decimal> areaOfOpeningsList = new List<decimal>();
-                    List<decimal> lengthList = new List<decimal>();
-                    List<decimal> thicknessList = new List<decimal>();
-                    List<decimal> volumeList = new List<decimal>();
-                    List<decimal> countList = new List<decimal>();
-
-
-
-                    foreach (ListViewItem item in listOfElements.SelectedItems)
-                    {
-
-                        foreach (var ele in AllInstances)
-                        {
-
-                            if (item.Name == ele.Id)
-                            {
-
-                                uniqueIDList.Add(ele.Id);
-                                typeIDList.Add(ele.TypeId);
-                                familyList.Add(ele.FamilyName);
-                                nameList.Add(ele.Name);
-
-                                netAreaList.Add(ele.NetArea);
-                                grossAreaList.Add(ele.GrossArea);
-                                areaOfOpeningsList.Add(0);
-                                lengthList.Add(ele.Length);
-                                thicknessList.Add(0);
-                                volumeList.Add(ele.Volume);
-                                countList.Add(ele.Count);
-
-                                break;
-                            }
-                        }
-                    }
-
-                    uniqueID = string.Join(", ",uniqueIDList.ToArray());
-                    typeID = string.Join(", ", typeIDList.ToArray());
-                    family = string.Join(", ", familyList.ToArray());
-                    name = string.Join(", ", nameList.ToArray());
-                    IFCType = string.Join(", ", IFCTypeList.ToArray());
-                    material = string.Join(", ", materialList.ToArray());
-
-                    netArea = netArea.Insert(0, Math.Round(netAreaList.Sum(), 3).ToString());
-                    grossArea = grossArea.Insert(0, Math.Round(grossAreaList.Sum(), 3).ToString());
-                    areaOfOpenings = areaOfOpenings.Insert(0, Math.Round(areaOfOpeningsList.Sum(), 3).ToString());
-                    length = length.Insert(0, Math.Round(lengthList.Sum(), 3).ToString());
-                    thickness = thickness.Insert(0, Math.Round(thicknessList.Sum(), 3).ToString());
-                    volume = volume.Insert(0, Math.Round(volumeList.Sum(), 3).ToString());
-                    count = count.Insert(0, countList.Sum().ToString());
-
+                    ids.Add(item.Name);
                 }
 
-
-                listIdentification.Add(AddItemWithSubItem("Unique ID", uniqueID));
-                listIdentification.Add(AddItemWithSubItem("Type ID", typeID));
-                listIdentification.Add(AddItemWithSubItem("Family", family));
-                listIdentification.Add(AddItemWithSubItem("Name", name));
-                listIdentification.Add(AddItemWithSubItem("IFC Type", IFCType));
-                listIdentification.Add(AddItemWithSubItem("Material", material));
-
-                listQuantities.Add(AddItemWithSubItem("Net Area", netArea));
-                listQuantities.Add(AddItemWithSubItem("Gross Area", grossArea));
-                listQuantities.Add(AddItemWithSubItem("Area of Openings", areaOfOpenings));
-                listQuantities.Add(AddItemWithSubItem("Length", length));
-                listQuantities.Add(AddItemWithSubItem("Thickness", thickness));
-                listQuantities.Add(AddItemWithSubItem("Volume", volume));
-                listQuantities.Add(AddItemWithSubItem("Count", count));
-
-
-                identification.Items.AddRange(listIdentification.ToArray());
-                quantities.Items.AddRange(listQuantities.ToArray());
-
-
-                var selectedElement = listOfElements.SelectedItems[0];
-                var selectedElements = listOfElements.SelectedItems;
+                UpdateQuantitiesAndIdentification(ids);
 
             }
             catch
             {
-                
+
             }
-            
         }
 
+        
+
+
+        private void IfcViewer_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+            quantities.Items.Clear();
+            identification.Items.Clear();
+
+            try
+            {
+                if (ifcViewer.SelectedEntity != null)
+                {
+
+
+                    var requiredProducts = IfcAPI.LoadAllProducts(ifcViewer.Selection);
+                    
+
+                    List<string> ids = new List<string>();
+                    
+                    foreach(var o in requiredProducts)
+                    {
+                        ids.Add(o.GlobalId);
+                        
+                    }
+
+                    UpdateQuantitiesAndIdentification(ids);
+
+                }
+
+            }
+            catch { }
+        }
+
+
+
+
+        private void UpdateQuantitiesAndIdentification(List<string> strings)
+        {
+
+            List<ListViewItem> listIdentification = new List<ListViewItem>();
+            List<ListViewItem> listQuantities = new List<ListViewItem>();
+
+            string uniqueID = "";
+            string typeID = "";
+            string family = "";
+            string name = "";
+            string IFCType = "";
+            string material = "";
+
+            string netArea = " m2";
+            string grossArea = " m2";
+            string areaOfOpenings = " m2";
+            string length = " m";
+            string thickness = " mm";
+            string volume = " m3";
+            string count = "";
+
+
+
+            if (strings.Count <= 1)
+            {
+                IfcObjects element = null;
+
+
+
+                foreach (var ele in AllInstances)
+                {
+
+                    if (strings[0] == ele.Id)
+                    {
+                        element = ele;
+                        break;
+                    }
+                }
+
+
+                uniqueID = element.Id;
+                typeID = element.TypeId;
+                family = element.FamilyName;
+                name = element.Name;
+                IFCType = "";
+                material = "";
+
+                netArea = netArea.Insert(0, Math.Round(element.NetArea, 3).ToString());
+                grossArea = grossArea.Insert(0, Math.Round(element.GrossArea, 3).ToString());
+                areaOfOpenings = areaOfOpenings.Insert(0, "0");
+                length = length.Insert(0, Math.Round(element.Length, 3).ToString());
+                thickness = thickness.Insert(0, "0");
+                volume = volume.Insert(0, Math.Round(element.Volume, 3).ToString());
+                count = count.Insert(0, element.Count.ToString());
+
+
+
+
+            }
+            else
+            {
+                List<string> uniqueIDList = new List<string>();
+                List<string> typeIDList = new List<string>();
+                List<string> familyList = new List<string>();
+                List<string> nameList = new List<string>();
+                List<string> IFCTypeList = new List<string>();
+                List<string> materialList = new List<string>();
+
+                List<decimal> netAreaList = new List<decimal>();
+                List<decimal> grossAreaList = new List<decimal>();
+                List<decimal> areaOfOpeningsList = new List<decimal>();
+                List<decimal> lengthList = new List<decimal>();
+                List<decimal> thicknessList = new List<decimal>();
+                List<decimal> volumeList = new List<decimal>();
+                List<decimal> countList = new List<decimal>();
+
+
+
+                foreach (var id in strings)
+                {
+
+                    foreach (var ele in AllInstances)
+                    {
+
+                        if (id == ele.Id)
+                        {
+
+                            uniqueIDList.Add(ele.Id);
+                            typeIDList.Add(ele.TypeId);
+                            familyList.Add(ele.FamilyName);
+                            nameList.Add(ele.Name);
+
+                            netAreaList.Add(ele.NetArea);
+                            grossAreaList.Add(ele.GrossArea);
+                            areaOfOpeningsList.Add(0);
+                            lengthList.Add(ele.Length);
+                            thicknessList.Add(0);
+                            volumeList.Add(ele.Volume);
+                            countList.Add(ele.Count);
+
+                            break;
+                        }
+                    }
+                }
+
+                uniqueID = string.Join(", ", uniqueIDList.ToArray());
+                typeID = string.Join(", ", typeIDList.ToArray());
+                family = string.Join(", ", familyList.ToArray());
+                name = string.Join(", ", nameList.ToArray());
+                IFCType = string.Join(", ", IFCTypeList.ToArray());
+                material = string.Join(", ", materialList.ToArray());
+
+                netArea = netArea.Insert(0, Math.Round(netAreaList.Sum(), 3).ToString());
+                grossArea = grossArea.Insert(0, Math.Round(grossAreaList.Sum(), 3).ToString());
+                areaOfOpenings = areaOfOpenings.Insert(0, Math.Round(areaOfOpeningsList.Sum(), 3).ToString());
+                length = length.Insert(0, Math.Round(lengthList.Sum(), 3).ToString());
+                thickness = thickness.Insert(0, Math.Round(thicknessList.Sum(), 3).ToString());
+                volume = volume.Insert(0, Math.Round(volumeList.Sum(), 3).ToString());
+                count = count.Insert(0, countList.Sum().ToString());
+
+            }
+
+
+            listIdentification.Add(AddItemWithSubItem("Unique ID", uniqueID));
+            listIdentification.Add(AddItemWithSubItem("Type ID", typeID));
+            listIdentification.Add(AddItemWithSubItem("Family", family));
+            listIdentification.Add(AddItemWithSubItem("Name", name));
+            listIdentification.Add(AddItemWithSubItem("IFC Type", IFCType));
+            listIdentification.Add(AddItemWithSubItem("Material", material));
+
+            listQuantities.Add(AddItemWithSubItem("Net Area", netArea));
+            listQuantities.Add(AddItemWithSubItem("Gross Area", grossArea));
+            listQuantities.Add(AddItemWithSubItem("Area of Openings", areaOfOpenings));
+            listQuantities.Add(AddItemWithSubItem("Length", length));
+            listQuantities.Add(AddItemWithSubItem("Thickness", thickness));
+            listQuantities.Add(AddItemWithSubItem("Volume", volume));
+            listQuantities.Add(AddItemWithSubItem("Count", count));
+
+
+            identification.Items.AddRange(listIdentification.ToArray());
+            quantities.Items.AddRange(listQuantities.ToArray());
+
+
+        }
+
+
+        private void IfcViewer_SelectedEntityChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+
+            
+            
+            try
+            {
+                
+                //if (ifcViewer.SelectedEntity != null)
+                //{
+
+
+
+
+                //    quantities.Items.Clear();
+                    
+
+                //    var requiredProducts = new IIfcProduct[0]
+                //        .Concat(ifcViewer.Selection.OfType<IIfcWindow>())
+                //        .Concat(ifcViewer.Selection.OfType<IIfcWall>())
+                //        .Concat(ifcViewer.Selection.OfType<IIfcDoor>())
+                //        .Concat(ifcViewer.Selection.OfType<IIfcSlab>())
+                //        .Concat(ifcViewer.Selection.OfType<IIfcRoof>())
+                //        .Concat(ifcViewer.Selection.OfType<IIfcFooting>());
+
+
+                //    List<IfcObjects> obj = requiredProducts.Select(x => new IfcObjects(x.Name)
+                //    {
+                //        Id = x.GlobalId,
+
+                //    }).ToList();
+
+
+                //    foreach (var objItem in obj)
+                //    {
+                //        Console.WriteLine(objItem.Id);
+                //    }
+
+                //}
+                
+
+
+
+
+                //using (IfcStore model = ifcViewer.SelectedEntity.Model)
+                //{
+                //    var requiredProducts = new IIfcProduct[0]
+                //    .Concat(model.Instances.OfType<IIfcWindow>())
+                //    .Concat(model.Instances.OfType<IIfcWall>())
+                //    .Concat(model.Instances.OfType<IIfcDoor>())
+                //    .Concat(model.Instances.OfType<IIfcSlab>())
+                //    .Concat(model.Instances.OfType<IIfcRoof>())
+                //    .Concat(model.Instances.OfType<IIfcFooting>());
+
+                //    return requiredProducts.Select(x => new IfcObjects(x.Name)
+                //    {
+                //        Id = x.GlobalId,
+                //        Length = GetLength(x),
+                //        NetArea = GetNetArea(x),
+                //        GrossArea = GetGrossArea(x),
+                //        Volume = GetVolume(x),
+                //    }).ToList();
+
+                //}
+
+
+                //List<ListViewItem> listIdentification = new List<ListViewItem>();
+                //List<ListViewItem> listQuantities = new List<ListViewItem>();
+
+                //string uniqueID = "";
+                //string typeID = "";
+                //string family = "";
+                //string name = "";
+                //string IFCType = "";
+                //string material = "";
+
+                //string netArea = " m2";
+                //string grossArea = " m2";
+                //string areaOfOpenings = " m2";
+                //string length = " m";
+                //string thickness = " mm";
+                //string volume = " m3";
+                //string count = "";
+
+
+
+                //if (listOfElements.SelectedItems.Count <= 1)
+                //{
+                //    IfcObjects element = null;
+
+
+
+                //    foreach (var ele in AllInstances)
+                //    {
+
+                //        if (listOfElements.SelectedItems[0].Name == ele.Id)
+                //        {
+                //            element = ele;
+                //            break;
+                //        }
+                //    }
+
+
+                //    uniqueID = element.Id;
+                //    typeID = element.TypeId;
+                //    family = element.FamilyName;
+                //    name = element.Name;
+                //    IFCType = "";
+                //    material = "";
+
+                //    netArea = netArea.Insert(0, Math.Round(element.NetArea, 3).ToString());
+                //    grossArea = grossArea.Insert(0, Math.Round(element.GrossArea, 3).ToString());
+                //    areaOfOpenings = areaOfOpenings.Insert(0, "0");
+                //    length = length.Insert(0, Math.Round(element.Length, 3).ToString());
+                //    thickness = thickness.Insert(0, "0");
+                //    volume = volume.Insert(0, Math.Round(element.Volume, 3).ToString());
+                //    count = count.Insert(0, element.Count.ToString());
+
+
+
+
+                //}
+                //else
+                //{
+                //    List<string> uniqueIDList = new List<string>();
+                //    List<string> typeIDList = new List<string>();
+                //    List<string> familyList = new List<string>();
+                //    List<string> nameList = new List<string>();
+                //    List<string> IFCTypeList = new List<string>();
+                //    List<string> materialList = new List<string>();
+
+                //    List<decimal> netAreaList = new List<decimal>();
+                //    List<decimal> grossAreaList = new List<decimal>();
+                //    List<decimal> areaOfOpeningsList = new List<decimal>();
+                //    List<decimal> lengthList = new List<decimal>();
+                //    List<decimal> thicknessList = new List<decimal>();
+                //    List<decimal> volumeList = new List<decimal>();
+                //    List<decimal> countList = new List<decimal>();
+
+
+
+                //    foreach (ListViewItem item in listOfElements.SelectedItems)
+                //    {
+
+                //        foreach (var ele in AllInstances)
+                //        {
+
+                //            if (item.Name == ele.Id)
+                //            {
+
+                //                uniqueIDList.Add(ele.Id);
+                //                typeIDList.Add(ele.TypeId);
+                //                familyList.Add(ele.FamilyName);
+                //                nameList.Add(ele.Name);
+
+                //                netAreaList.Add(ele.NetArea);
+                //                grossAreaList.Add(ele.GrossArea);
+                //                areaOfOpeningsList.Add(0);
+                //                lengthList.Add(ele.Length);
+                //                thicknessList.Add(0);
+                //                volumeList.Add(ele.Volume);
+                //                countList.Add(ele.Count);
+
+                //                break;
+                //            }
+                //        }
+                //    }
+
+                //    uniqueID = string.Join(", ", uniqueIDList.ToArray());
+                //    typeID = string.Join(", ", typeIDList.ToArray());
+                //    family = string.Join(", ", familyList.ToArray());
+                //    name = string.Join(", ", nameList.ToArray());
+                //    IFCType = string.Join(", ", IFCTypeList.ToArray());
+                //    material = string.Join(", ", materialList.ToArray());
+
+                //    netArea = netArea.Insert(0, Math.Round(netAreaList.Sum(), 3).ToString());
+                //    grossArea = grossArea.Insert(0, Math.Round(grossAreaList.Sum(), 3).ToString());
+                //    areaOfOpenings = areaOfOpenings.Insert(0, Math.Round(areaOfOpeningsList.Sum(), 3).ToString());
+                //    length = length.Insert(0, Math.Round(lengthList.Sum(), 3).ToString());
+                //    thickness = thickness.Insert(0, Math.Round(thicknessList.Sum(), 3).ToString());
+                //    volume = volume.Insert(0, Math.Round(volumeList.Sum(), 3).ToString());
+                //    count = count.Insert(0, countList.Sum().ToString());
+
+                //}
+
+
+                //listIdentification.Add(AddItemWithSubItem("Unique ID", uniqueID));
+                //listIdentification.Add(AddItemWithSubItem("Type ID", typeID));
+                //listIdentification.Add(AddItemWithSubItem("Family", family));
+                //listIdentification.Add(AddItemWithSubItem("Name", name));
+                //listIdentification.Add(AddItemWithSubItem("IFC Type", IFCType));
+                //listIdentification.Add(AddItemWithSubItem("Material", material));
+
+                //listQuantities.Add(AddItemWithSubItem("Net Area", netArea));
+                //listQuantities.Add(AddItemWithSubItem("Gross Area", grossArea));
+                //listQuantities.Add(AddItemWithSubItem("Area of Openings", areaOfOpenings));
+                //listQuantities.Add(AddItemWithSubItem("Length", length));
+                //listQuantities.Add(AddItemWithSubItem("Thickness", thickness));
+                //listQuantities.Add(AddItemWithSubItem("Volume", volume));
+                //listQuantities.Add(AddItemWithSubItem("Count", count));
+
+
+                //identification.Items.AddRange(listIdentification.ToArray());
+                //quantities.Items.AddRange(listQuantities.ToArray());
+
+
+                //var selectedElement = listOfElements.SelectedItems[0];
+                //var selectedElements = listOfElements.SelectedItems;
+
+            }
+            catch
+            {
+
+            }
+        }
 
 
         private ListViewItem AddItemWithSubItem(string name, string value)
@@ -355,9 +621,13 @@ namespace FourDScheduling
             MainMenu mainMenu = new MainMenu();
             mainMenu.ShowDialog();
 
-            
-
-
         }
+
+        
+
+        
+
+
+
     }
 }
