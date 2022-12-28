@@ -136,19 +136,10 @@ namespace FourDScheduling
 
             if (strings.Count <= 1)
             {
-                IfcObjects element = null;
+                IfcObjects element = AllInstances.FirstOrDefault(x => x.Id == strings[0]);
 
 
 
-                foreach (var ele in AllInstances)
-                {
-
-                    if (strings[0] == ele.Id)
-                    {
-                        element = ele;
-                        break;
-                    }
-                }
 
 
                 uniqueID = element.Id;
