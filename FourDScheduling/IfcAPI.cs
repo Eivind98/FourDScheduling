@@ -169,7 +169,6 @@ namespace FourDScheduling
                         .Concat(test.OfType<IIfcFooting>());
 
             return products;
-
         }
 
         public static IEnumerable<IIfcProduct> LoadAllProducts(IEntityCollection test)
