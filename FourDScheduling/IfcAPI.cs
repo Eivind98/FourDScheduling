@@ -79,12 +79,12 @@ namespace FourDScheduling
         //from another project
         public static decimal GetVolume(IIfcProduct product)
         {
-            var value = GetProperty<IIfcQuantityVolume>(product, "NetVolume")?.VolumeValue.ToString()??"0";
+            var value = GetProperty<IIfcQuantityVolume>(product, "NetVolume")?.VolumeValue.ToString() ?? "0";
             return decimal.Parse(value, CultureInfo.InvariantCulture);
-            
+
         }
 
-        
+
 
 
         //from another project but only usable one
@@ -133,59 +133,54 @@ namespace FourDScheduling
         }
 
 
-        //loading all ifc objects
         public static List<IfcObjects> LoadIfcObjects(string ifcPath)
         {
-            
-            using (IfcStore model = IfcStore.Open(ifcPath))
+            using (var model = IfcStore.Open(ifcPath))
             {
-                
-                var requiredProducts = LoadAllProducts(model.Instances);
-                
-
-                return requiredProducts.Select(x => new IfcObjects(x.Name)
-                {
-                    Id = x.GlobalId,
-                    Length = GetLength(x),
-                    NetArea = GetNetArea(x),
-                    GrossArea = GetGrossArea(x),
-                    Volume = GetVolume(x),
-                }).ToList();
-
+                return LoadProducts(model.Instances)
+                    .Select(product => new IfcObjects(product.Name)
+                    {
+                        Id = product.GlobalId,
+                        Length = GetLength(product),
+                        NetArea = GetNetArea(product),
+                        GrossArea = GetGrossArea(product),
+                        Volume = GetVolume(product),
+                    }).ToList();
             }
-
         }
-        
-        public static IEnumerable<IIfcProduct> LoadAllProducts(EntitySelection test)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="modelInstances"></param>
+        /// <returns></returns>
+        public static IEnumerable<IIfcProduct> LoadProducts(IEntityCollection modelInstances)
         {
-
-            var products = new IIfcProduct[0]
-                        .Concat(test.OfType<IIfcWindow>())
-                        .Concat(test.OfType<IIfcWall>())
-                        .Concat(test.OfType<IIfcDoor>())
-                        .Concat(test.OfType<IIfcStairFlight>())
-                        .Concat(test.OfType<IIfcSlab>())
-                        .Concat(test.OfType<IIfcRoof>())
-                        .Concat(test.OfType<IIfcFooting>());
-
-            return products;
+            return new List<IIfcProduct>()
+                        .Concat(modelInstances.OfType<IIfcProduct>());
+                        //.Concat(modelInstances.OfType<IIfcWall>())
+                        //.Concat(modelInstances.OfType<IIfcDoor>())
+                        //.Concat(modelInstances.OfType<IIfcStairFlight>())
+                        //.Concat(modelInstances.OfType<IIfcSlab>())
+                        //.Concat(modelInstances.OfType<IIfcRoof>())
+                        //.Concat(modelInstances.OfType<IIfcFooting>());
         }
 
-        public static IEnumerable<IIfcProduct> LoadAllProducts(IEntityCollection test)
+
+
+        public static IEnumerable<IIfcProduct> LoadProducts(EntitySelection ifcSelection)
         {
-
-            var products = new IIfcProduct[0]
-                        .Concat(test.OfType<IIfcWindow>())
-                        .Concat(test.OfType<IIfcWall>())
-                        .Concat(test.OfType<IIfcDoor>())
-                        .Concat(test.OfType<IIfcStairFlight>())
-                        .Concat(test.OfType<IIfcSlab>())
-                        .Concat(test.OfType<IIfcRoof>())
-                        .Concat(test.OfType<IIfcFooting>());
-
-            return products;
-
+            return new List<IIfcProduct>()
+                        .Concat(ifcSelection.OfType<IIfcWindow>())
+                        .Concat(ifcSelection.OfType<IIfcWall>())
+                        .Concat(ifcSelection.OfType<IIfcDoor>())
+                        .Concat(ifcSelection.OfType<IIfcStairFlight>())
+                        .Concat(ifcSelection.OfType<IIfcSlab>())
+                        .Concat(ifcSelection.OfType<IIfcRoof>())
+                        .Concat(ifcSelection.OfType<IIfcFooting>());
         }
+
+
 
 
     }

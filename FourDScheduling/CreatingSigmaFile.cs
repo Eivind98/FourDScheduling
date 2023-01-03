@@ -37,8 +37,8 @@ namespace FourDScheduling
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\Revit.ifc";
-
+            //btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\Revit.ifc";
+            btnIFCfile.Text = "Choose File Path";
 
             try
             {
@@ -89,7 +89,7 @@ namespace FourDScheduling
                 {
 
 
-                    var requiredProducts = IfcAPI.LoadAllProducts(ifcViewer.Selection);
+                    var requiredProducts = IfcAPI.LoadProducts(ifcViewer.Selection);
                     
 
                     List<string> ids = new List<string>();
