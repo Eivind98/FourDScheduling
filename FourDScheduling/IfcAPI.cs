@@ -150,20 +150,22 @@ namespace FourDScheduling
         }
 
         /// <summary>
-        /// 
+        /// This will only load specific product types and not all of them.
+        /// The most basic types will be loaded:
+        /// Windows, Walls, Doors, Stair flights, Slabs(includes floors), Roofs and footings.
         /// </summary>
         /// <param name="modelInstances"></param>
         /// <returns></returns>
         public static IEnumerable<IIfcProduct> LoadProducts(IEntityCollection modelInstances)
         {
             return new List<IIfcProduct>()
-                        .Concat(modelInstances.OfType<IIfcProduct>());
-                        //.Concat(modelInstances.OfType<IIfcWall>())
-                        //.Concat(modelInstances.OfType<IIfcDoor>())
-                        //.Concat(modelInstances.OfType<IIfcStairFlight>())
-                        //.Concat(modelInstances.OfType<IIfcSlab>())
-                        //.Concat(modelInstances.OfType<IIfcRoof>())
-                        //.Concat(modelInstances.OfType<IIfcFooting>());
+                        .Concat(modelInstances.OfType<IIfcWindow>())
+                        .Concat(modelInstances.OfType<IIfcWall>())
+                        .Concat(modelInstances.OfType<IIfcDoor>())
+                        .Concat(modelInstances.OfType<IIfcStairFlight>())
+                        .Concat(modelInstances.OfType<IIfcSlab>())
+                        .Concat(modelInstances.OfType<IIfcRoof>())
+                        .Concat(modelInstances.OfType<IIfcFooting>());
         }
 
 
