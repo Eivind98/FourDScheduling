@@ -26,6 +26,7 @@ namespace FourDScheduling
 
             Application.EnableVisualStyles();
             Application.Run(new MainMenu());
+            
 
             /*
             

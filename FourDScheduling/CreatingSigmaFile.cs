@@ -20,20 +20,23 @@ namespace FourDScheduling
     {
 
         public static List<IfcObjects> AllInstances { get; set; }
+        public Form Parent { get; }
 
-
-
-        public CreateSigmaFile()
+        public CreateSigmaFile(Form parent)
         {
             
             InitializeComponent();
             this.listOfElements.CheckBoxes = true;
             this.ifcViewer.MouseUp += IfcViewer_MouseUp;
             this.listOfElements.MouseUp += ListOfElements_MouseUp;
-
+            this.FormClosed += OnFormClosed;
+            Parent = parent;
         }
 
-        
+        private void OnFormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -393,8 +396,8 @@ namespace FourDScheduling
         private void btnBack_Click(object sender, EventArgs e)
         {
             Hide();
-            MainMenu mainMenu = new MainMenu();
-            mainMenu.ShowDialog();
+            Parent.Show();
+
 
         }
 

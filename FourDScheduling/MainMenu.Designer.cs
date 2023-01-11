@@ -114,6 +114,7 @@
             this.XButton.TabIndex = 4;
             this.XButton.Text = "X";
             this.XButton.UseVisualStyleBackColor = false;
+            this.XButton.Click += new System.EventHandler(this.XButton_Click);
             // 
             // MainMenu
             // 
