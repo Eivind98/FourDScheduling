@@ -51,7 +51,6 @@ namespace FourDScheduling
             }
             catch { }
             
-
         }
 
         private void ListOfElements_MouseUp(object sender, MouseEventArgs e)
@@ -136,13 +135,9 @@ namespace FourDScheduling
             string count = "";
 
 
-
             if (strings.Count <= 1)
             {
                 IfcObjects element = AllInstances.FirstOrDefault(x => x.Id == strings[0]);
-
-
-
 
 
                 uniqueID = element.Id;
@@ -154,14 +149,11 @@ namespace FourDScheduling
 
                 netArea = netArea.Insert(0, Math.Round(element.NetArea, 3).ToString());
                 grossArea = grossArea.Insert(0, Math.Round(element.GrossArea, 3).ToString());
-                areaOfOpenings = areaOfOpenings.Insert(0, "0");
+                areaOfOpenings = areaOfOpenings.Insert(0, Math.Round(element.AreaOfOpenings, 3).ToString());
                 length = length.Insert(0, Math.Round(element.Length, 3).ToString());
-                thickness = thickness.Insert(0, "0");
+                thickness = thickness.Insert(0, Math.Round(element.Thickness, 3).ToString());
                 volume = volume.Insert(0, Math.Round(element.Volume, 3).ToString());
                 count = count.Insert(0, element.Count.ToString());
-
-
-
 
             }
             else
@@ -182,7 +174,6 @@ namespace FourDScheduling
                 List<decimal> countList = new List<decimal>();
 
 
-
                 foreach (var id in strings)
                 {
 
@@ -199,9 +190,9 @@ namespace FourDScheduling
 
                             netAreaList.Add(ele.NetArea);
                             grossAreaList.Add(ele.GrossArea);
-                            areaOfOpeningsList.Add(0);
+                            areaOfOpeningsList.Add(ele.AreaOfOpenings);
                             lengthList.Add(ele.Length);
-                            thicknessList.Add(0);
+                            thicknessList.Add(ele.Thickness);
                             volumeList.Add(ele.Volume);
                             countList.Add(ele.Count);
 
@@ -249,9 +240,6 @@ namespace FourDScheduling
 
 
         }
-
-
-        
 
 
         private ListViewItem AddItemWithSubItem(string name, string value)
@@ -314,7 +302,8 @@ namespace FourDScheduling
                         {
                             Text = ifcObject.Name + "+" + ifcObject.FamilyName,
                             Name = ifcObject.Id,
-                            Group = listOfElements.Groups[groupIndexer]
+                            Group = listOfElements.Groups[groupIndexer],
+                            Checked = ifcObject.Chosen
 
                         });
 

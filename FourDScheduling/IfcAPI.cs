@@ -11,6 +11,9 @@ using System.Globalization;
 using Microsoft.Isam.Esent.Interop;
 using Xbim.Presentation;
 using Xbim.Common;
+using Xbim.Common.Geometry;
+using Xbim.Common.XbimExtensions;
+using Xbim.ModelGeometry.Scene;
 
 namespace FourDScheduling
 {
@@ -79,12 +82,73 @@ namespace FourDScheduling
         //from another project
         public static decimal GetVolume(IIfcProduct product)
         {
+            //try
+            //{
+
+            //    var model = product.Model;
+
+            //    var context = new Xbim3DModelContext(model);
+            //    context.CreateContext();
+            //    var item = model.Instances.FirstOrDefault<IIfcWall>();
+
+            //    var productshape = context.ShapeInstancesOf(product);
+            //    var _productShape = productshape.Where(s => s.RepresentationType != XbimGeometryRepresentationType.OpeningsAndAdditionsExcluded).ToList();
+            //    var geometry = new XbimShapeGeometry();
+
+            //    decimal vol = 0;
+
+            //    foreach (var shapeInstance in _productShape)
+            //    {
+            //        geometry = context.ShapeGeometry(shapeInstance);
+            //        var ms = new MemoryStream(((IXbimShapeGeometryData)geometry).ShapeData);
+            //        var br = new BinaryReader(ms);
+            //        var mesh = br.ReadShapeTriangulation().Transform(shapeInstance.Transformation);
+
+
+            //        List<int> trs = new List<int>();
+
+            //        vol += VolumeOfMesh(mesh.Vertices, trs);
+
+            //    }
+            //    return vol;
+            //}
+            //catch
+            //{
+            //    var value = GetProperty<IIfcQuantityVolume>(product, "NetVolume")?.VolumeValue.ToString() ?? "0";
+            //    return decimal.Parse(value, CultureInfo.InvariantCulture);
+            //}
+
             var value = GetProperty<IIfcQuantityVolume>(product, "NetVolume")?.VolumeValue.ToString() ?? "0";
             return decimal.Parse(value, CultureInfo.InvariantCulture);
-
         }
 
+        private static double SignedVolumeOfTriangle(XbimPoint3D p1, XbimPoint3D p2, XbimPoint3D p3)
+        {
+            var v321 = p3.X * p2.Y * p1.Z;
+            var v231 = p2.X * p3.Y * p1.Z;
+            var v312 = p3.X * p1.Y * p2.Z;
+            var v132 = p1.X * p3.Y * p2.Z;
+            var v213 = p2.X * p1.Y * p3.Z;
+            var v123 = p1.X * p2.Y * p3.Z;
+            return (1 / 6) * (-v321 + v231 + v312 - v132 - v213 + v123);
+        }
 
+        public static decimal VolumeOfMesh(IList<XbimPoint3D> vertices, List<int> trs)
+        {
+            decimal volume = 0;
+
+            for (int i = 0; i < trs.Count; i += 3)
+            {
+                XbimPoint3D p1 = vertices[trs[i + 0]];
+                XbimPoint3D p2 = vertices[trs[i + 1]];
+                XbimPoint3D p3 = vertices[trs[i + 2]];
+
+                decimal vol = (decimal)SignedVolumeOfTriangle(p1, p2, p3);
+                
+                volume += vol;
+            }
+            return Math.Abs(volume);
+        }
 
 
         //from another project but only usable one
@@ -138,14 +202,7 @@ namespace FourDScheduling
             using (var model = IfcStore.Open(ifcPath))
             {
                 return LoadProducts(model.Instances)
-                    .Select(product => new IfcObjects(product.Name)
-                    {
-                        Id = product.GlobalId,
-                        Length = GetLength(product),
-                        NetArea = GetNetArea(product),
-                        GrossArea = GetGrossArea(product),
-                        Volume = GetVolume(product),
-                    }).ToList();
+                    .Select(product => new IfcObjects(product)).ToList();
             }
         }
 
