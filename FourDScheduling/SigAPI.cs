@@ -5,39 +5,76 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
-
+using com.sun.xml.@internal.ws.api.addressing;
+using com.sun.org.apache.xerces.@internal.dom;
 
 namespace FourDScheduling
 {
     public class SigAPI
     {
 
-        public static void AddSigmaComponent(XmlDocument xmlDoc, SigTask sigTask)
+        public static void AddSigmaComponent(XmlDocument xmlDoc, List<SigTask> sigTasks)
+        {
+            string parentName = "IFC Export";
+
+            XmlElement parentComponent = xmlDoc.CreateElement("Component");
+            parentComponent.SetAttribute("Name", parentName);
+
+            XmlElement pName = xmlDoc.CreateElement("Name");
+            pName.InnerText = parentName;
+            parentComponent.AppendChild(pName);
+
+            AddSigmaComponent(xmlDoc, sigTasks, parentComponent);
+
+        }
+
+
+        public static void AddSigmaComponent(XmlDocument xmlDoc, List<SigTask> sigTasks, XmlElement parent)
         {
             XmlNodeList levelElements = xmlDoc.SelectNodes("//Level[text()='0']");
-            XmlElement projectElement = (XmlElement)levelElements.Item(0).ParentNode;
+            XmlElement projectComponent = (XmlElement)levelElements.Item(0).ParentNode;
+
+            
+
+            foreach (SigTask task in sigTasks)
+            {
+
+                parent.AppendChild(CreateSigmaComponent(xmlDoc, task));
+
+                
+            }
+
+            projectComponent.AppendChild(parent);
+
+        }
+
+
+        public static XmlElement CreateSigmaComponent(XmlDocument xmlDoc, SigTask sigTask)
+        {
+            
             string taskName = sigTask.Name;
 
-            XmlElement component = xmlDoc.CreateElement("Component");
-            component.SetAttribute("Name", taskName);
+            XmlElement childComponent = xmlDoc.CreateElement("Component");
+            childComponent.SetAttribute("Name", taskName);
 
             XmlElement number = xmlDoc.CreateElement("Number");
-            number.InnerText = sigTask.Unit;
-            component.AppendChild(number);
+            number.InnerText = sigTask.Classification;
+            childComponent.AppendChild(number);
 
             XmlElement name = xmlDoc.CreateElement("Name");
             name.InnerText = taskName;
-            component.AppendChild(name);
+            childComponent.AppendChild(name);
 
             XmlElement unit = xmlDoc.CreateElement("Unit");
             unit.InnerText = sigTask.Unit;
-            component.AppendChild(unit);
+            childComponent.AppendChild(unit);
 
             XmlElement amount = xmlDoc.CreateElement("Amount");
             amount.InnerText = sigTask.Quantity;
-            component.AppendChild(amount);
+            childComponent.AppendChild(amount);
 
-            projectElement.AppendChild(component);
+            return childComponent;
+
 
         }
 

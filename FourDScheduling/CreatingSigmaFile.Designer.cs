@@ -33,8 +33,6 @@
             this.identification = new System.Windows.Forms.ListView();
             this.nameIdentification = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueIdentification = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.ifcViewer = new Xbim.Presentation.DrawingControl3D();
             this.quantities = new System.Windows.Forms.ListView();
             this.nameQuantities = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valueQuantities = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -44,8 +42,9 @@
             this.btnIFCfile = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.btnBack = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnCreateSigmaFile = new System.Windows.Forms.Button();
             this.btnDirectory = new System.Windows.Forms.Button();
             this.btnDirectory2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -113,16 +112,6 @@
             this.valueIdentification.Text = "Value";
             this.valueIdentification.Width = 145;
             // 
-            // elementHost1
-            // 
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.elementHost1.Location = new System.Drawing.Point(0, 0);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(778, 693);
-            this.elementHost1.TabIndex = 3;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = this.ifcViewer;
-            // 
             // quantities
             // 
             this.quantities.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -138,6 +127,7 @@
             this.quantities.TabIndex = 4;
             this.quantities.UseCompatibleStateImageBehavior = false;
             this.quantities.View = System.Windows.Forms.View.Details;
+            this.quantities.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.quantities_ItemChecked);
             // 
             // nameQuantities
             // 
@@ -254,6 +244,16 @@
             this.splitContainer4.SplitterDistance = 329;
             this.splitContainer4.TabIndex = 5;
             // 
+            // elementHost1
+            // 
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elementHost1.Location = new System.Drawing.Point(0, 0);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(778, 693);
+            this.elementHost1.TabIndex = 3;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = null;
+            // 
             // btnBack
             // 
             this.btnBack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -266,16 +266,17 @@
             this.btnBack.UseVisualStyleBackColor = true;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
-            // button1
+            // btnCreateSigmaFile
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(1230, 719);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(185, 28);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Create Sigma file";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnCreateSigmaFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCreateSigmaFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCreateSigmaFile.Location = new System.Drawing.Point(1230, 719);
+            this.btnCreateSigmaFile.Name = "btnCreateSigmaFile";
+            this.btnCreateSigmaFile.Size = new System.Drawing.Size(185, 28);
+            this.btnCreateSigmaFile.TabIndex = 7;
+            this.btnCreateSigmaFile.Text = "Create Sigma file";
+            this.btnCreateSigmaFile.UseVisualStyleBackColor = true;
+            this.btnCreateSigmaFile.Click += new System.EventHandler(this.btnCreateSigmaFile_Click);
             // 
             // btnDirectory
             // 
@@ -308,7 +309,7 @@
             this.ClientSize = new System.Drawing.Size(1430, 759);
             this.Controls.Add(this.btnDirectory2);
             this.Controls.Add(this.btnDirectory);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnCreateSigmaFile);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(900, 520);
@@ -345,14 +346,13 @@
         private System.Windows.Forms.ListView identification;
         private System.Windows.Forms.ColumnHeader nameIdentification;
         private System.Windows.Forms.ColumnHeader valueIdentification;
-        private System.Windows.Forms.Integration.ElementHost elementHost1;
         private Xbim.Presentation.DrawingControl3D ifcViewer;
         private System.Windows.Forms.ListView quantities;
         private System.Windows.Forms.ColumnHeader nameQuantities;
         private System.Windows.Forms.ColumnHeader valueQuantities;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Button btnBack;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnCreateSigmaFile;
         private System.Windows.Forms.Button btnDirectory;
         private System.Windows.Forms.Button btnDirectory2;
         private System.Windows.Forms.SplitContainer splitContainer3;
@@ -360,5 +360,6 @@
         private System.Windows.Forms.Button btnIFCfile;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer4;
+        private System.Windows.Forms.Integration.ElementHost elementHost1;
     }
 }

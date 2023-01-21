@@ -16,6 +16,7 @@ using Xbim.Common.XbimExtensions;
 using System.Windows.Forms;
 using SharpCompress.Archives.Zip;
 using ICSharpCode.SharpZipLib.Zip;
+using sun.net.www.content.text;
 
 namespace FourDScheduling
 {
@@ -26,15 +27,17 @@ namespace FourDScheduling
         [STAThread]
         static void Main(string[] args)
         {
-            //var path = @"C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\Gantt Test\\Playing around1.sig";
+            //var path = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\Gantt Test\\Playing around1.sig";
+            //var path1 = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\Gantt Test\\Testing\\Not messing around anymore.sig";
             //List<SigTask> sigTasks = new List<SigTask>();
-            
+
 
             //sigTasks = SigAPI.LoadAllTasks(path);
 
             //XmlDocument xmlDoc = new XmlDocument();
-            //xmlDoc.Load(path);
 
+
+            //xmlDoc.Load(path);
 
 
 
@@ -53,7 +56,10 @@ namespace FourDScheduling
             //}
             //Console.ReadLine();
 
-            //xmlDoc.Save(path);
+            //using (XmlWriter writer = XmlWriter.Create(path1, new XmlWriterSettings { Indent = true, IndentChars = "\t", NewLineOnAttributes = true }))
+            //{
+            //    xmlDoc.Save(writer);
+            //}
 
 
 
@@ -61,11 +67,11 @@ namespace FourDScheduling
 
 
 
-            
+
             //The Program
             Application.EnableVisualStyles();
             Application.Run(new MainMenu());
-            
+
 
 
 

@@ -1,15 +1,21 @@
-﻿using System;
+﻿using com.sun.tools.javac.jvm;
+using SharpCompress.Common;
+using sun.security.util;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Xml;
 using Xbim.Ifc;
 using Xbim.Ifc4.Interfaces;
 using Xbim.ModelGeometry.Scene;
@@ -26,22 +32,28 @@ namespace FourDScheduling
         {
             
             InitializeComponent();
-            this.listOfElements.CheckBoxes = true;
-            this.ifcViewer.MouseUp += IfcViewer_MouseUp;
-            this.listOfElements.MouseUp += ListOfElements_MouseUp;
-            this.FormClosed += OnFormClosed;
+            listOfElements.CheckBoxes = true;
+            listOfElements.MouseUp += ListOfElements_MouseUp;
+            quantities.CheckBoxes = true;
+
+            
+
+            //ifcViewer.MouseUp += IfcViewer_MouseUp;
+
+            FormClosed += OnFormClosed;
             Parent = parent;
         }
 
         private void OnFormClosed(object sender, FormClosedEventArgs e)
         {
-            Application.Exit();
+            System.Windows.Forms.Application.Exit();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             //btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\Revit.ifc";
             btnIFCfile.Text = "Choose File Path";
+            btnDirectory.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\Gantt Test\\Testing";
 
             try
             {
@@ -76,7 +88,9 @@ namespace FourDScheduling
             }
         }
 
-        
+
+
+
 
 
         private void IfcViewer_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -134,6 +148,15 @@ namespace FourDScheduling
             string volume = " m3";
             string count = "";
 
+            string variable = "";
+
+            bool netAreaCheck = false;
+            bool grossAreaCheck = false;
+            bool areaOfOpeningsCheck = false;
+            bool lengthCheck = false;
+            bool thicknessCheck = false;
+            bool volumeCheck = false;
+            bool countCheck = false;
 
             if (strings.Count <= 1)
             {
@@ -155,6 +178,7 @@ namespace FourDScheduling
                 volume = volume.Insert(0, Math.Round(element.Volume, 3).ToString());
                 count = count.Insert(0, element.Count.ToString());
 
+                variable = element.variable;
             }
             else
             {
@@ -172,6 +196,8 @@ namespace FourDScheduling
                 List<decimal> thicknessList = new List<decimal>();
                 List<decimal> volumeList = new List<decimal>();
                 List<decimal> countList = new List<decimal>();
+
+                List<string> variableList = new List<string>();
 
 
                 foreach (var id in strings)
@@ -196,6 +222,8 @@ namespace FourDScheduling
                             volumeList.Add(ele.Volume);
                             countList.Add(ele.Count);
 
+                            variableList.Add(ele.variable);
+
                             break;
                         }
                     }
@@ -216,7 +244,48 @@ namespace FourDScheduling
                 volume = volume.Insert(0, Math.Round(volumeList.Sum(), 3).ToString());
                 count = count.Insert(0, countList.Sum().ToString());
 
+                variable = variableList[0];
+
+                foreach(string var in variableList)
+                {
+                    if(variable != var)
+                    {
+                        variable = "";
+                        break;
+                    }
+                }
+
             }
+
+            IfcObjects valid = new IfcObjects("valid");
+
+            switch (variable)
+            {
+                case "Length":
+                    lengthCheck = true;
+                    break;
+                case "Thickness":
+                    thicknessCheck = true;
+                    break;
+                case "AreaOfOpenings":
+                    areaOfOpeningsCheck = true;
+                    break;
+                case "NetArea":
+                    netAreaCheck = true;
+                    break;
+                case "GrossArea":
+                    grossAreaCheck = true;
+                    break;
+                case "Volume":
+                    volumeCheck = true;
+                    break;
+                case "Count":
+                    countCheck = true;
+                    break;
+                default: break;
+            }
+
+
 
 
             listIdentification.Add(AddItemWithSubItem("Unique ID", uniqueID));
@@ -226,13 +295,13 @@ namespace FourDScheduling
             listIdentification.Add(AddItemWithSubItem("IFC Type", IFCType));
             listIdentification.Add(AddItemWithSubItem("Material", material));
 
-            listQuantities.Add(AddItemWithSubItem("Net Area", netArea));
-            listQuantities.Add(AddItemWithSubItem("Gross Area", grossArea));
-            listQuantities.Add(AddItemWithSubItem("Area of Openings", areaOfOpenings));
-            listQuantities.Add(AddItemWithSubItem("Length", length));
-            listQuantities.Add(AddItemWithSubItem("Thickness", thickness));
-            listQuantities.Add(AddItemWithSubItem("Volume", volume));
-            listQuantities.Add(AddItemWithSubItem("Count", count));
+            listQuantities.Add(AddItemWithSubItem("Net Area", netArea, netAreaCheck));
+            listQuantities.Add(AddItemWithSubItem("Gross Area", grossArea, grossAreaCheck));
+            listQuantities.Add(AddItemWithSubItem("Area of Openings", areaOfOpenings, areaOfOpeningsCheck));
+            listQuantities.Add(AddItemWithSubItem("Length", length, lengthCheck));
+            listQuantities.Add(AddItemWithSubItem("Thickness", thickness, thicknessCheck));
+            listQuantities.Add(AddItemWithSubItem("Volume", volume, volumeCheck));
+            listQuantities.Add(AddItemWithSubItem("Count", count, countCheck));
 
 
             identification.Items.AddRange(listIdentification.ToArray());
@@ -242,7 +311,7 @@ namespace FourDScheduling
         }
 
 
-        private ListViewItem AddItemWithSubItem(string name, string value)
+        private ListViewItem AddItemWithSubItem(string name, string value, bool check)
         {
 
             ListViewItem item = new ListViewItem()
@@ -254,11 +323,16 @@ namespace FourDScheduling
             {
                 Text = value
             });
+            item.Checked = check;
 
             return item;
         }
 
+        private ListViewItem AddItemWithSubItem(string name, string value)
+        {
 
+            return AddItemWithSubItem(name, value, false);
+        }
 
         private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
         {
@@ -273,8 +347,8 @@ namespace FourDScheduling
             var context = new Xbim3DModelContext(ifcModel);
             context.CreateContext();
 
-            ifcViewer.Model = ifcModel;
-            ifcViewer.LoadGeometry(ifcModel);
+            //ifcViewer.Model = ifcModel;
+            //ifcViewer.LoadGeometry(ifcModel);
 
             listOfElements.Groups.Clear();
             listOfElements.Items.Clear();
@@ -291,7 +365,7 @@ namespace FourDScheduling
             foreach (var group in groupedByName)
             {
 
-                listOfElements.Groups.Add(new ListViewGroup(group.Name, HorizontalAlignment.Left));
+                listOfElements.Groups.Add(new ListViewGroup(group.Name, System.Windows.Forms.HorizontalAlignment.Left));
 
                 foreach (IfcObjects ifcObject in allInstances)
                 {
@@ -391,10 +465,240 @@ namespace FourDScheduling
         }
 
         
+        private void btnCreateSigmaFile_Click(object sender, EventArgs e)
+        {
+            if (btnDirectory.Text != "")
+            {
+                List<string> strings = new List<string>();
+                List<SigTask> sigTask = new List<SigTask>();
 
-        
+                foreach (ListViewItem item in listOfElements.Items)
+                {
+                    if (item.Checked)
+                    {
+                        strings.Add(item.Name);
+                        foreach (IfcObjects obj in AllInstances)
+                        {
+
+                            if (item.Name == obj.Id)
+                            {
+                                sigTask.Add(new SigTask(obj));
+
+                            }
+                        }
+                    }
+                }
+                XmlDocument xmlDoc = new XmlDocument();
+
+                string path = Directory.GetCurrentDirectory() + "\\Template\\Sigma Template.sig";
+
+                xmlDoc.Load(path);
+
+                SigAPI.AddSigmaComponent(xmlDoc, sigTask);
+
+
+                using (XmlWriter writer = XmlWriter.Create(btnDirectory.Text + "\\IFC Export.sig", new XmlWriterSettings { Indent = true, IndentChars = "\t", NewLineOnAttributes = true }))
+                {
+                    xmlDoc.Save(writer);
+                }
+
+                Hide();
+                Parent.Show();
+            }
+            
+        }
+
+        private void quantities_MouseUp(object sender, MouseEventArgs e)
+        {
+
+            if (e.Button == MouseButtons.Left)
+            {
+                var item = quantities.GetItemAt(e.X, e.Y);
+                if (item != null)
+                {
+                    if (!item.Checked)
+                    {
+                        item.Checked = true;
+                        for (int i = 0; i < quantities.Items.Count; i++)
+                        {
+                            if (i != item.Index)
+                            {
+                                quantities.Items[i].Checked = false;
+                            }
+                        }
+                    }
+
+                    foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
+                    {
+                        foreach (IfcObjects obj in AllInstances)
+                        {
+                            if (selectedItem.Name == obj.Id)
+                            {
+                                switch (item.Text)
+                                {
+                                    case "Net Area":
+                                        obj.variable = obj.validVariables[3];
+                                        break;
+                                    case "Gross Area":
+                                        obj.variable = obj.validVariables[4];
+                                        break;
+                                    case "Area of Openings":
+                                        obj.variable = obj.validVariables[2];
+                                        break;
+                                    case "Length":
+                                        obj.variable = obj.validVariables[0];
+                                        break;
+                                    case "Thickness":
+                                        obj.variable = obj.validVariables[1];
+                                        break;
+                                    case "Volume":
+                                        obj.variable = obj.validVariables[5];
+                                        break;
+                                    case "Count":
+                                        obj.variable = obj.validVariables[6];
+                                        break;
+                                    default: break;
+                                }
+                            }
+
+
+                        }
+                    }
+
+                }
+            }
 
 
 
+
+
+
+
+
+            //int stuff = 0;
+            //bool checking = false;
+
+            //List<ListViewItem> some = new List<ListViewItem>();
+
+            //foreach (ListViewItem item in quantities.Items)
+            //{
+            //    if(item.Checked == true)
+            //    {
+            //        some.Add(item);
+            //        if (stuff == 1)
+            //        {
+            //            checking = true;
+            //            break;
+            //        }
+            //        else
+            //        {
+            //            stuff++;
+            //        }
+            //    }
+            //}
+
+            //if (checking)
+            //{
+            //    List<IfcObjects> obj = new List<IfcObjects>();
+
+
+
+            //    foreach (var id in some)
+            //    {
+
+            //        foreach (var ele in AllInstances)
+            //        {
+
+            //            if (id.Name == ele.Id)
+            //            {
+            //                ele.variable = id.Text;
+
+            //                break;
+            //            }
+            //        }
+            //    }
+
+
+
+            //}
+
+
+
+        }
+
+        private void quantities_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+
+            //try
+            //{
+            //    foreach (ListViewItem item in quantities.Items)
+            //    {
+            //        item.Checked = false;
+            //    }
+            //}catch{ }
+            
+            
+
+        }
+
+        private void quantities_Click(object sender, EventArgs e)
+        {
+            //if (e.Button == MouseButtons.Left)
+            //{
+            //    var item = quantities.GetItemAt(e.X, e.Y);
+            //    if (item != null)
+            //    {
+            //        if (!item.Checked)
+            //        {
+            //            item.Checked = true;
+            //            for (int i = 0; i < quantities.Items.Count; i++)
+            //            {
+            //                if (i != item.Index)
+            //                {
+            //                    quantities.Items[i].Checked = false;
+            //                }
+            //            }
+            //        }
+
+            //        foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
+            //        {
+            //            foreach (IfcObjects obj in AllInstances)
+            //            {
+            //                if (selectedItem.Name == obj.Id)
+            //                {
+            //                    switch (item.Text)
+            //                    {
+            //                        case "Net Area":
+            //                            obj.variable = obj.validVariables[3];
+            //                            break;
+            //                        case "Gross Area":
+            //                            obj.variable = obj.validVariables[4];
+            //                            break;
+            //                        case "Area of Openings":
+            //                            obj.variable = obj.validVariables[2];
+            //                            break;
+            //                        case "Length":
+            //                            obj.variable = obj.validVariables[0];
+            //                            break;
+            //                        case "Thickness":
+            //                            obj.variable = obj.validVariables[1];
+            //                            break;
+            //                        case "Volume":
+            //                            obj.variable = obj.validVariables[5];
+            //                            break;
+            //                        case "Count":
+            //                            obj.variable = obj.validVariables[6];
+            //                            break;
+            //                        default: break;
+            //                    }
+            //                }
+
+
+            //            }
+            //        }
+
+            //    }
+            //}
+        }
     }
 }

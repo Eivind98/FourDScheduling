@@ -69,6 +69,36 @@ namespace FourDScheduling
             Volume = IfcAPI.GetVolume(product);
             Chosen = TypeId == "" ? false : true;
 
+
+
+            switch (product)
+            {
+                case IIfcWindow _:
+                    variable = validVariables[6];
+                    break;
+                case IIfcWall _:
+                    variable = validVariables[3];
+                    break;
+                case IIfcDoor _:
+                    variable = validVariables[6];
+                    break;
+                case IIfcStairFlight _:
+                    variable = validVariables[6];
+                    break;
+                case IIfcSlab _:
+                    variable = validVariables[3];
+                    break;
+                case IIfcRoof _:
+                    variable = validVariables[3];
+                    break;
+                case IIfcFooting _:
+                    variable = validVariables[5];
+                    break;
+                default:
+                    
+                    break;
+
+            }
         }
 
 
