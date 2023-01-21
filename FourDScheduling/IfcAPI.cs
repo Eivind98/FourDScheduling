@@ -14,6 +14,15 @@ using Xbim.Common;
 using Xbim.Common.Geometry;
 using Xbim.Common.XbimExtensions;
 using Xbim.ModelGeometry.Scene;
+using System.Runtime.Remoting.Contexts;
+using Xbim.Ifc4.GeometryResource;
+using Xbim.Ifc4.ProductExtension;
+using Xbim.Ifc4.MeasureResource;
+using Xbim.Geometry.Engine.Interop;
+using Xbim.Geometry;
+using Xbim.Geometry.Engine;
+using Microsoft.Extensions.Logging;
+using System.Windows.Shapes;
 
 namespace FourDScheduling
 {
@@ -82,6 +91,113 @@ namespace FourDScheduling
         //from another project
         public static decimal GetVolume(IIfcProduct product)
         {
+            //double volume = 0;
+            //var model = product.Model;
+            //var context = new Xbim3DModelContext(model);
+            //context.CreateContext();
+
+
+            //using (var model = IfcStore.Open("path/to/file.ifc"))
+            //{
+            //    double volume = 0;
+            //    var context = new Xbim3DModelContext(model);
+            //    context.CreateContext();
+            //    ILogger logger = new LoggerFactory().CreateLogger<Program>();
+            //    IIfcProduct element = model.Instances.OfType<IIfcProduct>().FirstOrDefault();
+            //    IIfcGeometricRepresentationItem geomRep = (IIfcGeometricRepresentationItem)element.Representation.Representations.FirstOrDefault();
+            //    var geomEngine = new XbimGeometryEngine();
+            //    using (IXbimGeometryObject geomStore = geomEngine.Create(geomRep, logger))
+            //    {
+            //        var solids = model.Instances.OfType<IIfcSolidModel>();
+            //        foreach (var solid in solids)
+            //        {
+            //            var shape = context.ShapeInstancesOf(solid).FirstOrDefault();
+            //            if (shape != null)
+            //            {
+            //                IXbimGeometryObject geomObj = geomStore.Create(shape);
+            //                if (geomObj is IXbimSolid)
+            //                {
+            //                    IXbimSolid xbimSolid = (IXbimSolid)geomObj;
+            //                    volume += xbimSolid.Volume;
+            //                }
+            //            }
+            //        }
+            //    }
+            //    Console.WriteLine("Volume of element: " + volume);
+            //}
+
+
+            //using (var model = IfcStore.Open("path/to/file.ifc"))
+            //{
+            //    double volume = 0;
+            //    var context = new Xbim3DModelContext(model);
+            //    context.CreateContext();
+            //    var solids = model.Instances.OfType<IIfcSolidModel>();
+            //    foreach (var solid in solids)
+            //    {
+            //        var shape = context.ShapeInstancesOf((XbimShapeGeometry)solid).FirstOrDefault();
+            //        if (shape != null)
+            //        {
+            //            IXbimGeometryObject geomObj = shape.Geometry;
+            //            if (geomObj is IXbimSolid)
+            //            {
+            //                IXbimSolid xbimSolid = (IXbimSolid)geomObj;
+            //                volume += xbimSolid.Volume;
+            //            }
+            //        }
+            //    }
+            //    Console.WriteLine("Total volume of all elements: " + volume);
+            //}
+
+            //using (var model = IfcStore.Open("path/to/file.ifc"))
+            //{
+            //    double volume = 0;
+            //    var context = new Xbim3DModelContext(model);
+            //    context.CreateContext();
+            //    var elements = context.ShapeInstances;
+            //    foreach (var element in elements)
+            //    {
+            //        var shapeGeometry = context.ShapeGeometry(element);
+            //        if (shapeGeometry != null)
+            //        {
+            //            var geomRep = shapeGeometry.IfcShapeRepresentation;
+            //            var solid = geomRep.Items.OfType<IIfcSolidModel>().FirstOrDefault();
+            //            if (solid != null)
+            //            {
+            //                //convert the IIfcSolidModel to a solid representation that can be used to calculate volume
+            //                // you can use third party library to calculate the volume of the solid
+            //            }
+            //        }
+            //    }
+            //    Console.WriteLine("Total volume of all elements: " + volume);
+            //}
+
+            //using (var model = IfcStore.Open("path/to/file.ifc"))
+            //{
+            //    double volume = 0;
+            //    var context = new Xbim3DModelContext(model);
+            //    context.CreateContext();
+            //    var elements = context.ShapeInstances;
+            //    var geomEngine = new XbimGeometryEngine();
+            //    //create geometry
+            //    foreach (var element in elements)
+            //    {
+            //        if (element.RepresentationType == XbimGeometryRepresentationType.OpeningsAndAdditionsIncluded)
+            //        {
+            //            var solid = element.ShapeGeometry.Solid;
+            //            if (solid != null)
+            //            {
+            //                var solidSet = geomEngine.CreateSolidSet();
+            //                geomEngine.Triangulate(solid, solidSet);
+            //                var faces = solidSet.Faces;
+            //                //iterate over faces and calculate the volume
+            //            }
+            //        }
+            //    }
+            //    Console.WriteLine("Total volume of all elements: " + volume);
+            //}
+
+
             //try
             //{
 
@@ -89,7 +205,6 @@ namespace FourDScheduling
 
             //    var context = new Xbim3DModelContext(model);
             //    context.CreateContext();
-            //    var item = model.Instances.FirstOrDefault<IIfcWall>();
 
             //    var productshape = context.ShapeInstancesOf(product);
             //    var _productShape = productshape.Where(s => s.RepresentationType != XbimGeometryRepresentationType.OpeningsAndAdditionsExcluded).ToList();

@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
+using sun.security.util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Xbim.Ifc4.Interfaces;
-using Xbim.Ifc4.MeasureResource;
 
 namespace FourDScheduling
 {
@@ -24,11 +22,28 @@ namespace FourDScheduling
         public decimal GrossArea { get; set; }
         public decimal Volume { get; set; }
         public bool Chosen { get; set; }
+        
         public int Count { get; set; } = 1;
+
+        public readonly string[] validVariables = { "Length", "Thickness", "AreaOfOpenings", "NetArea", "GrossArea", "Volume", "Count" };
+        private string _variable;
+
+        public string variable
+        {
+            get { return _variable; }
+            set
+            {
+                if (validVariables.Contains(value))
+                    _variable = value;
+                else
+                    throw new ArgumentException("Invalid variable.");
+            }
+        }
+
 
 
         private static Regex bimSevenAARegex = new Regex(@"(.{3,}):(((\d{6})(\.\d+)?\s)?(.+)):(\d{6})");
-        
+
 
         public IfcObjects(string name)
         {

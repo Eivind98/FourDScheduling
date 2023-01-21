@@ -7,12 +7,15 @@ using System.Xml;
 using Xbim.Ifc;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using Xbim.Ifc4.Interfaces;
 using System.Xml.Serialization;
 using Xbim.ModelGeometry.Scene;
 using Xbim.Common.Geometry;
 using Xbim.Common.XbimExtensions;
 using System.Windows.Forms;
+using SharpCompress.Archives.Zip;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace FourDScheduling
 {
@@ -23,13 +26,53 @@ namespace FourDScheduling
         [STAThread]
         static void Main(string[] args)
         {
+            //var path = @"C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\Gantt Test\\Playing around1.sig";
+            //List<SigTask> sigTasks = new List<SigTask>();
+            
 
+            //sigTasks = SigAPI.LoadAllTasks(path);
+
+            //XmlDocument xmlDoc = new XmlDocument();
+            //xmlDoc.Load(path);
+
+
+
+
+
+            //foreach (var t in sigTasks)
+            //{
+            //    SigAPI.AddSigmaComponent(xmlDoc, t);
+
+            //    Console.WriteLine(xmlDoc.LocalName);
+            //    Console.WriteLine(t.Name);
+            //    Console.WriteLine(t.Quantity);
+            //    Console.WriteLine(t.Unit);
+            //    Console.WriteLine(t.Classification);
+            //    Console.WriteLine("-----------------");
+
+            //}
+            //Console.ReadLine();
+
+            //xmlDoc.Save(path);
+
+
+
+
+
+
+
+            
+            //The Program
             Application.EnableVisualStyles();
             Application.Run(new MainMenu());
             
 
+
+
+
+
             /*
-            
+
             string ifcPath = "D:\\Gantt Test\\HavL3_K01_N001_ARK.ifc";
             //string ifcPath = "D:\\Gantt Test\\HavL3_K01_N001_ARK.ifc";
             string xmlPath = "D:\\Gantt Test\\empty.gan";
@@ -80,7 +123,7 @@ namespace FourDScheduling
 
             using (var model = IfcStore.Open("D:\\Gantt Test\\Revit.ifc"))
             {
-                
+
                 var context = new Xbim3DModelContext(model);
                 context.CreateContext();
                 var item = model.Instances.FirstOrDefault<IIfcWall>();
