@@ -7,8 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
+using Xbim.Common;
 using Xbim.Ifc;
+using Xbim.Ifc4.Interfaces;
 using Xbim.ModelGeometry.Scene;
+using Xbim.Presentation;
 
 namespace FourDScheduling
 {
@@ -24,20 +27,30 @@ namespace FourDScheduling
             InitializeComponent();
             listOfElements.CheckBoxes = true;
             listOfElements.MouseUp += ListOfElements_MouseUp;
-            //quantities.MouseUp += quantities_MouseUp;
+            listOfElements.MouseDown += ListOfElements_MouseDown;
+
+            quantities.MouseUp += quantities_MouseUp;
             quantities.CheckBoxes = true;
             //quantities.ItemChecked;
             quantities.MultiSelect = false;
-            quantities.ItemCheck += quantities_ItemCheck;
-            quantities.ItemChecked += Quantities_ItemChecked;
+            //quantities.ItemCheck += quantities_ItemCheck;
+            //quantities.ItemChecked += Quantities_ItemChecked;
 
+            quantities.MouseDown += quantities_MouseDown;
+            listOfElements.ItemSelectionChanged += listOfElements_ItemSelectionChanged;
 
+            ifcViewer.MouseUp += IfcViewer_MouseUp;
+            ifcViewer.SelectedEntityChanged += ifcViewer_SelectedEntityChanged;
 
-
-            //ifcViewer.MouseUp += IfcViewer_MouseUp;
 
             FormClosed += OnFormClosed;
             Parent = parent;
+        }
+
+        private void ListOfElements_MouseDown(object sender, MouseEventArgs e)
+        {
+
+            ifcViewer.SelectedEntity = null;
         }
 
         private void Quantities_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -70,6 +83,8 @@ namespace FourDScheduling
         {
             identification.Items.Clear();
             quantities.Items.Clear();
+            
+
             try
             {
 
@@ -512,67 +527,65 @@ namespace FourDScheduling
         private void quantities_MouseUp(object sender, MouseEventArgs e)
         {
 
-            if (e.Button == MouseButtons.Left)
-            {
-                var item = quantities.GetItemAt(e.X, e.Y);
+            //if (e.Button == MouseButtons.Left)
+            //{
+            //    var item = quantities.GetItemAt(e.X, e.Y);
 
-                if (item != null)
-                {
-                    if (!item.Checked)
-                    {
-                        item.Checked = true;
-                        for (int i = 0; i < quantities.Items.Count; i++)
-                        {
-                            if (i != item.Index)
-                            {
-                                quantities.Items[i].Checked = false;
-                            }
-                        }
-                    }
+            //    if (item != null)
+            //    {
+            //        if (!item.Checked)
+            //        {
+            //            item.Checked = true;
+            //            for (int i = 0; i < quantities.Items.Count; i++)
+            //            {
+            //                if (i != item.Index)
+            //                {
+            //                    quantities.Items[i].Checked = false;
+            //                }
+            //            }
+            //        }
 
-                    foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
-                    {
-                        foreach (IfcObjects obj in AllInstances)
-                        {
-                            if (selectedItem.Name == obj.Id)
-                            {
-                                switch (item.Text)
-                                {
-                                    case "Net Area":
-                                        obj.variable = obj.validVariables[3];
-                                        break;
-                                    case "Gross Area":
-                                        obj.variable = obj.validVariables[4];
-                                        break;
-                                    case "Area of Openings":
-                                        obj.variable = obj.validVariables[2];
-                                        break;
-                                    case "Length":
-                                        obj.variable = obj.validVariables[0];
-                                        break;
-                                    case "Thickness":
-                                        obj.variable = obj.validVariables[1];
-                                        break;
-                                    case "Volume":
-                                        obj.variable = obj.validVariables[5];
-                                        break;
-                                    case "Count":
-                                        obj.variable = obj.validVariables[6];
-                                        break;
-                                    default: break;
-                                }
-                            }
-
-
-                        }
-                    }
-
-                }
-            }
+            //        foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
+            //        {
+            //            foreach (IfcObjects obj in AllInstances)
+            //            {
+            //                if (selectedItem.Name == obj.Id)
+            //                {
+            //                    switch (item.Text)
+            //                    {
+            //                        case "Net Area":
+            //                            obj.variable = obj.validVariables[3];
+            //                            break;
+            //                        case "Gross Area":
+            //                            obj.variable = obj.validVariables[4];
+            //                            break;
+            //                        case "Area of Openings":
+            //                            obj.variable = obj.validVariables[2];
+            //                            break;
+            //                        case "Length":
+            //                            obj.variable = obj.validVariables[0];
+            //                            break;
+            //                        case "Thickness":
+            //                            obj.variable = obj.validVariables[1];
+            //                            break;
+            //                        case "Volume":
+            //                            obj.variable = obj.validVariables[5];
+            //                            break;
+            //                        case "Count":
+            //                            obj.variable = obj.validVariables[6];
+            //                            break;
+            //                        default: break;
+            //                    }
+            //                }
 
 
+            //            }
+            //        }
 
-            quantities.RedrawItems(0, 6, false);
+            //    }
+            //}
+
+
 
 
 
@@ -749,5 +762,189 @@ namespace FourDScheduling
             //    }
             //}
         }
+
+        private void changeChecked(ListViewItem item)
+        {
+            
+            if(item != null && item.Checked == false)
+            {
+                ListView list = item.ListView;
+                foreach(ListViewItem i in list.Items)
+                {
+                    if(i.Checked == true)
+                    {
+                        i.Checked = false;
+                    }
+
+
+                }
+                item.Checked = true;
+
+                foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
+                {
+                    foreach (IfcObjects obj in AllInstances)
+                    {
+                        if (selectedItem.Name == obj.Id)
+                        {
+                            switch (item.Text)
+                            {
+                                case "Net Area":
+                                    obj.variable = obj.validVariables[3];
+                                    break;
+                                case "Gross Area":
+                                    obj.variable = obj.validVariables[4];
+                                    break;
+                                case "Area of Openings":
+                                    obj.variable = obj.validVariables[2];
+                                    break;
+                                case "Length":
+                                    obj.variable = obj.validVariables[0];
+                                    break;
+                                case "Thickness":
+                                    obj.variable = obj.validVariables[1];
+                                    break;
+                                case "Volume":
+                                    obj.variable = obj.validVariables[5];
+                                    break;
+                                case "Count":
+                                    obj.variable = obj.validVariables[6];
+                                    break;
+                                default: break;
+                            }
+                        }
+
+
+                    }
+                }
+
+
+            }
+            
+        }
+
+        private void quantities_MouseDown(object sender, MouseEventArgs e)
+        {
+            
+
+            if (e.Button == MouseButtons.Left)
+            {
+                var item = quantities.GetItemAt(e.X, e.Y);
+
+                if (item != null)
+                {
+                    if (!item.Checked)
+                    {
+                        item.Checked = true;
+                        for (int i = 0; i < quantities.Items.Count; i++)
+                        {
+                            if (i != item.Index)
+                            {
+                                quantities.Items[i].Checked = false;
+                            }
+                        }
+
+                        foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
+                        {
+                            foreach (IfcObjects obj in AllInstances)
+                            {
+                                if (selectedItem.Name == obj.Id)
+                                {
+                                    switch (item.Text)
+                                    {
+                                        case "Net Area":
+                                            obj.variable = obj.validVariables[3];
+                                            break;
+                                        case "Gross Area":
+                                            obj.variable = obj.validVariables[4];
+                                            break;
+                                        case "Area of Openings":
+                                            obj.variable = obj.validVariables[2];
+                                            break;
+                                        case "Length":
+                                            obj.variable = obj.validVariables[0];
+                                            break;
+                                        case "Thickness":
+                                            obj.variable = obj.validVariables[1];
+                                            break;
+                                        case "Volume":
+                                            obj.variable = obj.validVariables[5];
+                                            break;
+                                        case "Count":
+                                            obj.variable = obj.validVariables[6];
+                                            break;
+                                        default: break;
+                                    }
+                                }
+
+
+                            }
+                        }
+
+                    }
+                    item.Checked = true;
+
+                    
+
+
+                }
+            }
+        }
+
+        private void listOfElements_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void listOfElements_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            var allProducts = ifcViewer.Model.Instances.OfType<IIfcProduct>();
+            var selection = ifcViewer.SelectedEntity;
+            ListViewItem selectedItem = e.Item;
+
+            if (selection == null)
+            {
+                foreach (var ifcItem in allProducts)
+                {
+                    
+                    if (ifcItem.GlobalId == selectedItem.Name)
+                    {
+                        ifcViewer.SelectedEntity = ifcItem;
+
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                var productSelection = selection.Model.Instances.OfType<IIfcProduct>();
+
+                foreach (var ifcItem in allProducts)
+                {
+                    
+                    if (ifcItem.GlobalId == selectedItem.Name)
+                    {
+                        
+
+                        ifcViewer.SelectedEntity = ifcItem;
+
+                        break;
+                    }
+                }
+
+
+
+            }
+
+
+        }
+
+        private void ifcViewer_SelectedEntityChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var test = e.AddedItems;
+
+
+        }
+
+
     }
 }

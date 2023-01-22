@@ -81,6 +81,7 @@
             this.listOfElements.TabIndex = 1;
             this.listOfElements.UseCompatibleStateImageBehavior = false;
             this.listOfElements.View = System.Windows.Forms.View.Details;
+            this.listOfElements.SelectedIndexChanged += new System.EventHandler(this.listOfElements_SelectedIndexChanged);
             // 
             // name
             // 
@@ -118,6 +119,7 @@
             this.quantities.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.quantities.CheckBoxes = true;
             this.quantities.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.nameQuantities,
             this.valueQuantities});
@@ -128,7 +130,6 @@
             this.quantities.TabIndex = 4;
             this.quantities.UseCompatibleStateImageBehavior = false;
             this.quantities.View = System.Windows.Forms.View.Details;
-            //this.quantities.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.quantities_ItemChecked);
             // 
             // nameQuantities
             // 
