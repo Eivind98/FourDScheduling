@@ -20,19 +20,29 @@ namespace FourDScheduling
 
         public CreateSigmaFile(Form parent)
         {
-            
+
             InitializeComponent();
             listOfElements.CheckBoxes = true;
             listOfElements.MouseUp += ListOfElements_MouseUp;
-            quantities.MouseUp += quantities_MouseUp;
+            //quantities.MouseUp += quantities_MouseUp;
             quantities.CheckBoxes = true;
+            //quantities.ItemChecked;
+            quantities.MultiSelect = false;
+            quantities.ItemCheck += quantities_ItemCheck;
+            quantities.ItemChecked += Quantities_ItemChecked;
 
-            
+
+
 
             //ifcViewer.MouseUp += IfcViewer_MouseUp;
 
             FormClosed += OnFormClosed;
             Parent = parent;
+        }
+
+        private void Quantities_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+
         }
 
         private void OnFormClosed(object sender, FormClosedEventArgs e)
@@ -48,12 +58,12 @@ namespace FourDScheduling
 
             try
             {
-                
+
                 LoadingIFCGeometry(btnIFCfile.Text);
 
             }
             catch { }
-            
+
         }
 
         private void ListOfElements_MouseUp(object sender, MouseEventArgs e)
@@ -97,14 +107,14 @@ namespace FourDScheduling
 
 
                     var requiredProducts = IfcAPI.LoadProducts(ifcViewer.Selection);
-                    
+
 
                     List<string> ids = new List<string>();
-                    
-                    foreach(var o in requiredProducts)
+
+                    foreach (var o in requiredProducts)
                     {
                         ids.Add(o.GlobalId);
-                        
+
                     }
 
                     UpdateQuantitiesAndIdentification(ids);
@@ -237,9 +247,9 @@ namespace FourDScheduling
 
                 variable = variableList[0];
 
-                foreach(string var in variableList)
+                foreach (string var in variableList)
                 {
-                    if(variable != var)
+                    if (variable != var)
                     {
                         variable = "";
                         break;
@@ -455,7 +465,7 @@ namespace FourDScheduling
 
         }
 
-        
+
         private void btnCreateSigmaFile_Click(object sender, EventArgs e)
         {
             if (btnDirectory.Text != "")
@@ -496,7 +506,7 @@ namespace FourDScheduling
                 Hide();
                 Parent.Show();
             }
-            
+
         }
 
         private void quantities_MouseUp(object sender, MouseEventArgs e)
@@ -505,6 +515,7 @@ namespace FourDScheduling
             if (e.Button == MouseButtons.Left)
             {
                 var item = quantities.GetItemAt(e.X, e.Y);
+
                 if (item != null)
                 {
                     if (!item.Checked)
@@ -561,7 +572,7 @@ namespace FourDScheduling
 
 
 
-
+            quantities.RedrawItems(0, 6, false);
 
 
 
@@ -617,8 +628,55 @@ namespace FourDScheduling
 
         }
 
-        private void quantities_ItemChecked(object sender, ItemCheckedEventArgs e)
+        private bool isChecking;
+        private bool canCheck = true;
+        private void quantities_ItemCheck(object sender, ItemCheckEventArgs e)
         {
+            if (!isChecking && canCheck)
+            {
+                isChecking = true;
+                foreach (ListViewItem item in quantities.Items)
+                {
+                    if (item.Index != e.Index)
+                    {
+                        item.Checked = false;
+                    }
+                }
+                e.NewValue = CheckState.Checked;
+                canCheck = true;
+                isChecking = false;
+            }
+            else
+            {
+                if (isChecking)
+                {
+                    e.NewValue = CheckState.Unchecked;
+                }
+                else
+                {
+                    e.NewValue = e.CurrentValue;
+                }
+            }
+
+            //e.NewValue = CheckState.Unchecked;
+
+            //if(e.NewValue != CheckState.Checked)
+            //{
+            //    e.NewValue = CheckState.Checked;
+            //    quantities.Items[e.Index].Checked = true;
+            //    //quantities.RedrawItems(e.Index, e.Index, false);
+            //}
+            //else if(e.NewValue == CheckState.Checked)
+            //{
+            //    foreach (ListViewItem item in quantities.CheckedItems)
+            //    {
+            //        if (item.Index != e.Index)
+            //        {
+            //            item.Checked = false;
+            //            quantities.RedrawItems(item.Index, item.Index, true);
+            //        }
+            //    }
+            //}
 
             //try
             //{
@@ -627,8 +685,8 @@ namespace FourDScheduling
             //        item.Checked = false;
             //    }
             //}catch{ }
-            
-            
+
+
 
         }
 

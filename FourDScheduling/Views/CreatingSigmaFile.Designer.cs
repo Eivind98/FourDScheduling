@@ -128,7 +128,7 @@
             this.quantities.TabIndex = 4;
             this.quantities.UseCompatibleStateImageBehavior = false;
             this.quantities.View = System.Windows.Forms.View.Details;
-            this.quantities.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.quantities_ItemChecked);
+            //this.quantities.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.quantities_ItemChecked);
             // 
             // nameQuantities
             // 
