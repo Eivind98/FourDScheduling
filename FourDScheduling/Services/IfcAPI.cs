@@ -1,30 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xbim.Ifc;
-using System.Diagnostics;
-using System.IO;
 using Xbim.Ifc4.Interfaces;
 using System.Globalization;
-using Microsoft.Isam.Esent.Interop;
 using Xbim.Presentation;
 using Xbim.Common;
 using Xbim.Common.Geometry;
-using Xbim.Common.XbimExtensions;
-using Xbim.ModelGeometry.Scene;
-using System.Runtime.Remoting.Contexts;
-using Xbim.Ifc4.GeometryResource;
-using Xbim.Ifc4.ProductExtension;
-using Xbim.Ifc4.MeasureResource;
-using Xbim.Geometry.Engine.Interop;
-using Xbim.Geometry;
-using Xbim.Geometry.Engine;
-using Microsoft.Extensions.Logging;
-using System.Windows.Shapes;
+using FourDScheduling.Models;
 
-namespace FourDScheduling
+namespace FourDScheduling.Services
 {
     public class IfcAPI
     {
@@ -35,13 +20,13 @@ namespace FourDScheduling
 
             switch (product)
             {
-                case IIfcProduct p when (p is IIfcSlab) || (p is IIfcRoof):
+                case IIfcProduct p when p is IIfcSlab || p is IIfcRoof:
                     nameOfProperty = "NetArea";
                     break;
-                case IIfcProduct p when (p is IIfcWall):
+                case IIfcProduct p when p is IIfcWall:
                     nameOfProperty = "NetSideArea";
                     break;
-                case IIfcProduct p when (p is IIfcDoor) || (p is IIfcWindow):
+                case IIfcProduct p when p is IIfcDoor || p is IIfcWindow:
                     nameOfProperty = "Area";
                     break;
                 default:
@@ -61,13 +46,13 @@ namespace FourDScheduling
 
             switch (product)
             {
-                case IIfcProduct p when (p is IIfcSlab) || (p is IIfcRoof):
+                case IIfcProduct p when p is IIfcSlab || p is IIfcRoof:
                     nameOfProperty = "GrossArea";
                     break;
-                case IIfcProduct p when (p is IIfcWall):
+                case IIfcProduct p when p is IIfcWall:
                     nameOfProperty = "GrossSideArea";
                     break;
-                case IIfcProduct p when (p is IIfcDoor) || (p is IIfcWindow):
+                case IIfcProduct p when p is IIfcDoor || p is IIfcWindow:
                     nameOfProperty = "Area";
                     break;
                 default:
@@ -245,7 +230,7 @@ namespace FourDScheduling
             var v132 = p1.X * p3.Y * p2.Z;
             var v213 = p2.X * p1.Y * p3.Z;
             var v123 = p1.X * p2.Y * p3.Z;
-            return (1 / 6) * (-v321 + v231 + v312 - v132 - v213 + v123);
+            return 1 / 6 * (-v321 + v231 + v312 - v132 - v213 + v123);
         }
 
         public static decimal VolumeOfMesh(IList<XbimPoint3D> vertices, List<int> trs)
@@ -259,7 +244,7 @@ namespace FourDScheduling
                 XbimPoint3D p3 = vertices[trs[i + 2]];
 
                 decimal vol = (decimal)SignedVolumeOfTriangle(p1, p2, p3);
-                
+
                 volume += vol;
             }
             return Math.Abs(volume);
@@ -288,7 +273,7 @@ namespace FourDScheduling
 
                 //lets make the name comparison more fuzzy. This might not be the best practise
                 .Where(p =>
-                    string.Equals(p.Name, name, System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase) ||
                     p.Name.ToString().ToLower().Contains(name.ToLower()))
 
                 //only take the first. In reality you should handle this more carefully.
@@ -306,7 +291,7 @@ namespace FourDScheduling
                 .OfType<T>()
                 //Contains skal nok slettes
                 .Where(p =>
-                    string.Equals(p.Name, name, System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase) ||
                     p.Name.ToString().ToLower().Contains(name.ToLower()))
                 .FirstOrDefault();
         }

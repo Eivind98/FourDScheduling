@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FourDScheduling
+﻿namespace FourDScheduling
 {
-    
+
     public static class Units
     {
-        public static string Length { get; set; } = "m";
-        public static string Thickness { get; set; } = "mm";
-        public static string AreaOfOpenings { get; set; } = "m2";
-        public static string NetArea { get; set; } = "m2";
-        public static string GrossArea { get; set; } = "m2";
-        public static string Volume { get; set; } = "m3";
-        public static string Count { get; set; } = "stk";
+        public const string Length = "m";
+        public const string Thickness = "mm";
+        public const string AreaOfOpenings = "m2";
+        public const string NetArea = "m2";
+        public const string GrossArea = "m2";
+        public const string Volume = "m3";
+        public const string Count = "stk";
 
     }
 }

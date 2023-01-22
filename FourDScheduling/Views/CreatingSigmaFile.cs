@@ -1,23 +1,13 @@
-﻿using com.sun.tools.javac.jvm;
-using SharpCompress.Common;
-using sun.security.util;
+﻿using FourDScheduling.Models;
+using FourDScheduling.Services;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Xml;
 using Xbim.Ifc;
-using Xbim.Ifc4.Interfaces;
 using Xbim.ModelGeometry.Scene;
 
 namespace FourDScheduling
@@ -348,8 +338,8 @@ namespace FourDScheduling
             var context = new Xbim3DModelContext(ifcModel);
             context.CreateContext();
 
-            //ifcViewer.Model = ifcModel;
-            //ifcViewer.LoadGeometry(ifcModel);
+            ifcViewer.Model = ifcModel;
+            ifcViewer.LoadGeometry(ifcModel);
 
             listOfElements.Groups.Clear();
             listOfElements.Items.Clear();

@@ -1,14 +1,12 @@
-﻿using SharpCompress.Common;
-using SharpCompress.Readers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
-using com.sun.xml.@internal.ws.api.addressing;
-using com.sun.org.apache.xerces.@internal.dom;
+using System.IO.Compression;
+using FourDScheduling.Models;
 
-namespace FourDScheduling
+namespace FourDScheduling.Services
 {
     public class SigAPI
     {
@@ -34,14 +32,14 @@ namespace FourDScheduling
             XmlNodeList levelElements = xmlDoc.SelectNodes("//Level[text()='0']");
             XmlElement projectComponent = (XmlElement)levelElements.Item(0).ParentNode;
 
-            
+
 
             foreach (SigTask task in sigTasks)
             {
 
                 parent.AppendChild(CreateSigmaComponent(xmlDoc, task));
 
-                
+
             }
 
             projectComponent.AppendChild(parent);
@@ -51,7 +49,7 @@ namespace FourDScheduling
 
         public static XmlElement CreateSigmaComponent(XmlDocument xmlDoc, SigTask sigTask)
         {
-            
+
             string taskName = sigTask.Name;
 
             XmlElement childComponent = xmlDoc.CreateElement("Component");
@@ -80,9 +78,9 @@ namespace FourDScheduling
 
         public static List<SigTask> LoadAllTasks(string path)
         {
-            
+
             List<SigTask> listOfSigTasks = new List<SigTask>();
-            
+
 
             switch (CheckFileType(path))
             {
@@ -109,11 +107,10 @@ namespace FourDScheduling
             XmlSerializer serializer = new XmlSerializer(typeof(SigmaFile));
             string fileName = Path.GetFileName(path);
 
-            using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(path))
+            using (var zip = ZipFile.Open(path, ZipArchiveMode.Read))
             {
-                using (MemoryStream stream = new MemoryStream())
+                using (var stream = zip.GetEntry(fileName).Open())
                 {
-                    zip[fileName].Extract(stream);
                     stream.Position = 0;
                     using (StreamReader reader = new StreamReader(stream))
                     {
@@ -122,7 +119,7 @@ namespace FourDScheduling
                     }
                 }
             }
-            
+
             return listOfSigTasks;
         }
 
@@ -149,9 +146,9 @@ namespace FourDScheduling
         public static string CheckFileType(string path)
         {
             string fileType = "";
-            
 
-            if (SigAPI.IsZipFile(path))
+
+            if (IsZipFile(path))
             {
                 fileType = "ZIP";
             }
@@ -159,28 +156,9 @@ namespace FourDScheduling
             {
                 fileType = "XML";
             }
-            
+
             return fileType;
         }
-
-
-        ////My normal code
-        //public static List<SigTask> LoadAllTasks(string path)
-        //{
-
-        //    var file = File.Open(path, FileMode.Open);
-        //    var sigma = (SigmaFile)new XmlSerializer(typeof(SigmaFile)).Deserialize(file);
-        //    List<SigTask> listOfSigTasks= new List<SigTask>();
-
-        //    foreach (var comp in sigma.ProjectData.ComponentData.Component)
-        //    {
-        //        listOfSigTasks.AddRange(Tasks(comp));
-        //    }
-
-        //    return listOfSigTasks;
-
-        //}
-
 
         public static List<SigTask> Tasks(Component comp)
         {
@@ -195,9 +173,7 @@ namespace FourDScheduling
                     Quantity = comp.Amount
                 });
             }
-            
 
-            
             if (comp.Component1 == null) return tasks;
             foreach (Component child in comp.Component1)
             {
@@ -216,7 +192,6 @@ namespace FourDScheduling
             try
             {
                 using (var stream = File.OpenRead(filePath))
-                using (var reader = ReaderFactory.Open(stream))
                 {
                     result = true;
                 }

@@ -43,6 +43,7 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.ifcViewer = new Xbim.Presentation.DrawingControl3D();
             this.btnBack = new System.Windows.Forms.Button();
             this.btnCreateSigmaFile = new System.Windows.Forms.Button();
             this.btnDirectory = new System.Windows.Forms.Button();
@@ -252,7 +253,7 @@
             this.elementHost1.Size = new System.Drawing.Size(778, 693);
             this.elementHost1.TabIndex = 3;
             this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = null;
+            this.elementHost1.Child = this.ifcViewer;
             // 
             // btnBack
             // 

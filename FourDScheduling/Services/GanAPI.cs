@@ -1,11 +1,9 @@
-﻿using System;
+﻿using FourDScheduling.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
-namespace FourDScheduling
+namespace FourDScheduling.Services
 {
     public class GanAPI
     {
@@ -49,7 +47,7 @@ namespace FourDScheduling
             if (taskName.Classification != "")
             {
                 string id = "";
-                foreach(Column c in existingColumns)
+                foreach (Column c in existingColumns)
                 {
                     if (c.Name == "Classification")
                     {
@@ -234,9 +232,9 @@ namespace FourDScheduling
 
         public static List<Column> LoadAllColumns(XmlDocument xmlDoc)
         {
-            
+
             XmlNodeList nodeListField = xmlDoc.GetElementsByTagName("view")[0].ChildNodes;
-            
+
             XmlNodeList nodeListTaskproperty = xmlDoc.GetElementsByTagName("taskproperty");
             List<Column> columns = new List<Column>();
 
@@ -245,7 +243,7 @@ namespace FourDScheduling
                 XmlNode taskpropertyNode = null;
                 foreach (XmlNode node2 in nodeListTaskproperty)
                 {
-                    if(node.Attributes["id"].Value == node2.Attributes["id"].Value)
+                    if (node.Attributes["id"].Value == node2.Attributes["id"].Value)
                     {
                         taskpropertyNode = node2;
                         break;
@@ -253,8 +251,8 @@ namespace FourDScheduling
 
                 }
 
-                
-                if(node.Name == "field")
+
+                if (node.Name == "field")
                 {
                     if (taskpropertyNode != null)
                     {
@@ -292,10 +290,10 @@ namespace FourDScheduling
             XmlNodeList nodes = xmlDoc.GetElementsByTagName("task");
             XmlNode node = null;
 
-            foreach(XmlNode n in nodes)
+            foreach (XmlNode n in nodes)
             {
-                
-                if(n.Attributes["id"].Value == parentTask.Id)
+
+                if (n.Attributes["id"].Value == parentTask.Id)
                 {
                     node = n;
                     break;

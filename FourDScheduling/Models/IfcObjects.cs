@@ -1,12 +1,12 @@
-﻿using Newtonsoft.Json;
-using sun.security.util;
+﻿using FourDScheduling.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Xbim.Ifc4.Interfaces;
 
-namespace FourDScheduling
+namespace FourDScheduling.Models
 {
     public class IfcObjects
     {
@@ -22,7 +22,7 @@ namespace FourDScheduling
         public decimal GrossArea { get; set; }
         public decimal Volume { get; set; }
         public bool Chosen { get; set; }
-        
+
         public int Count { get; set; } = 1;
 
         public readonly string[] validVariables = { "Length", "Thickness", "AreaOfOpenings", "NetArea", "GrossArea", "Volume", "Count" };
@@ -95,7 +95,7 @@ namespace FourDScheduling
                     variable = validVariables[5];
                     break;
                 default:
-                    
+
                     break;
 
             }
