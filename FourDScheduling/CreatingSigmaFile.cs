@@ -34,6 +34,7 @@ namespace FourDScheduling
             InitializeComponent();
             listOfElements.CheckBoxes = true;
             listOfElements.MouseUp += ListOfElements_MouseUp;
+            quantities.MouseUp += quantities_MouseUp;
             quantities.CheckBoxes = true;
 
             
