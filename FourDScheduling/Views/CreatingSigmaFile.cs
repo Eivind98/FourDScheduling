@@ -1,17 +1,25 @@
 ﻿using FourDScheduling.Models;
 using FourDScheduling.Services;
+using PropertyTools.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media.Media3D;
 using System.Xml;
 using Xbim.Common;
 using Xbim.Ifc;
+using Xbim.Ifc4.DateTimeResource;
 using Xbim.Ifc4.Interfaces;
+using Xbim.Ifc4.PresentationAppearanceResource;
 using Xbim.ModelGeometry.Scene;
 using Xbim.Presentation;
+using Xbim.Presentation.LayerStyling;
+using static System.Windows.Forms.MonthCalendar;
+using static Xbim.Presentation.DrawingControl3D;
 
 namespace FourDScheduling
 {
@@ -29,33 +37,35 @@ namespace FourDScheduling
             listOfElements.MouseUp += ListOfElements_MouseUp;
             listOfElements.MouseDown += ListOfElements_MouseDown;
 
-            quantities.MouseUp += quantities_MouseUp;
+            //quantities.MouseUp += quantities_MouseUp;
             quantities.CheckBoxes = true;
             //quantities.ItemChecked;
             quantities.MultiSelect = false;
-            //quantities.ItemCheck += quantities_ItemCheck;
+            quantities.ItemCheck += quantities_ItemCheck;
             //quantities.ItemChecked += Quantities_ItemChecked;
 
             quantities.MouseDown += quantities_MouseDown;
             listOfElements.ItemSelectionChanged += listOfElements_ItemSelectionChanged;
 
+            ifcViewer.MouseDown += IfcViewer_MouseDown;
             ifcViewer.MouseUp += IfcViewer_MouseUp;
             ifcViewer.SelectedEntityChanged += ifcViewer_SelectedEntityChanged;
+            
 
 
             FormClosed += OnFormClosed;
             Parent = parent;
         }
 
+        private void IfcViewer_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            
+        }
+
         private void ListOfElements_MouseDown(object sender, MouseEventArgs e)
         {
 
             ifcViewer.SelectedEntity = null;
-        }
-
-        private void Quantities_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-
         }
 
         private void OnFormClosed(object sender, FormClosedEventArgs e)
@@ -77,17 +87,38 @@ namespace FourDScheduling
             }
             catch { }
 
+            ifcViewer.ShowFps = true;
+            ifcViewer.SelectionBehaviour = SelectionBehaviours.MultipleSelection;
+
+            listOfElements.HideSelection = false;
+
+            List<ListViewItem> listIdentification = new List<ListViewItem>();
+            List<ListViewItem> listQuantities = new List<ListViewItem>();
+
+            listIdentification.Add(AddItemWithSubItem("Unique ID", ""));
+            listIdentification.Add(AddItemWithSubItem("Type ID", ""));
+            listIdentification.Add(AddItemWithSubItem("Family", ""));
+            listIdentification.Add(AddItemWithSubItem("Name", ""));
+            listIdentification.Add(AddItemWithSubItem("IFC Type", ""));
+            listIdentification.Add(AddItemWithSubItem("Material", ""));
+
+            listQuantities.Add(AddItemWithSubItem("Net Area", ""));
+            listQuantities.Add(AddItemWithSubItem("Gross Area", ""));
+            listQuantities.Add(AddItemWithSubItem("Area of Openings", ""));
+            listQuantities.Add(AddItemWithSubItem("Length", ""));
+            listQuantities.Add(AddItemWithSubItem("Thickness", ""));
+            listQuantities.Add(AddItemWithSubItem("Volume", ""));
+            listQuantities.Add(AddItemWithSubItem("Count", ""));
+
+            identification.Items.AddRange(listIdentification.ToArray());
+            quantities.Items.AddRange(listQuantities.ToArray());
         }
 
         private void ListOfElements_MouseUp(object sender, MouseEventArgs e)
         {
-            identification.Items.Clear();
-            quantities.Items.Clear();
             
-
             try
             {
-
                 List<string> ids = new List<string>();
 
                 foreach (ListViewItem item in listOfElements.SelectedItems)
@@ -104,25 +135,13 @@ namespace FourDScheduling
             }
         }
 
-
-
-
-
-
         private void IfcViewer_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-
-            quantities.Items.Clear();
-            identification.Items.Clear();
-
             try
             {
                 if (ifcViewer.SelectedEntity != null)
                 {
-
-
                     var requiredProducts = IfcAPI.LoadProducts(ifcViewer.Selection);
-
 
                     List<string> ids = new List<string>();
 
@@ -133,21 +152,16 @@ namespace FourDScheduling
                     }
 
                     UpdateQuantitiesAndIdentification(ids);
-
                 }
 
             }
             catch { }
+
+            listOfElements.Focus();
         }
-
-
-
 
         private void UpdateQuantitiesAndIdentification(List<string> strings)
         {
-
-            List<ListViewItem> listIdentification = new List<ListViewItem>();
-            List<ListViewItem> listQuantities = new List<ListViewItem>();
 
             string uniqueID = "";
             string typeID = "";
@@ -166,13 +180,6 @@ namespace FourDScheduling
 
             string variable = "";
 
-            bool netAreaCheck = false;
-            bool grossAreaCheck = false;
-            bool areaOfOpeningsCheck = false;
-            bool lengthCheck = false;
-            bool thicknessCheck = false;
-            bool volumeCheck = false;
-            bool countCheck = false;
 
             if (strings.Count <= 1)
             {
@@ -186,13 +193,13 @@ namespace FourDScheduling
                 IFCType = "";
                 material = "";
 
-                netArea = netArea.Insert(0, Math.Round(element.NetArea, 3).ToString());
-                grossArea = grossArea.Insert(0, Math.Round(element.GrossArea, 3).ToString());
-                areaOfOpenings = areaOfOpenings.Insert(0, Math.Round(element.AreaOfOpenings, 3).ToString());
-                length = length.Insert(0, Math.Round(element.Length, 3).ToString());
-                thickness = thickness.Insert(0, Math.Round(element.Thickness, 3).ToString());
-                volume = volume.Insert(0, Math.Round(element.Volume, 3).ToString());
-                count = count.Insert(0, element.Count.ToString());
+                netArea = Math.Round(element.NetArea, 3).ToString() + " " + Units.NetArea;
+                grossArea = Math.Round(element.GrossArea, 3).ToString() + " " + Units.GrossArea;
+                areaOfOpenings = Math.Round(element.AreaOfOpenings, 3).ToString() + " " + Units.AreaOfOpenings;
+                length = Math.Round(element.Length, 3).ToString() + " " + Units.Length;
+                thickness = Math.Round(element.Thickness, 3).ToString() + " " + Units.Thickness;
+                volume = Math.Round(element.Volume, 3).ToString() + " " + Units.Volume;
+                count = element.Count.ToString() + " " + Units.Count;
 
                 variable = element.variable;
             }
@@ -273,59 +280,52 @@ namespace FourDScheduling
 
             }
 
+            
+
+            identification.Items[0].SubItems[1].Text = uniqueID;
+            identification.Items[1].SubItems[1].Text = typeID;
+            identification.Items[2].SubItems[1].Text = family;
+            identification.Items[3].SubItems[1].Text = name;
+            identification.Items[4].SubItems[1].Text = IFCType;
+            identification.Items[5].SubItems[1].Text = material;
+
+            quantities.Items[0].SubItems[1].Text = netArea;
+            quantities.Items[1].SubItems[1].Text = grossArea;
+            quantities.Items[2].SubItems[1].Text = areaOfOpenings;
+            quantities.Items[3].SubItems[1].Text = length;
+            quantities.Items[4].SubItems[1].Text = thickness;
+            quantities.Items[5].SubItems[1].Text = volume;
+            quantities.Items[6].SubItems[1].Text = count;
+
             IfcObjects valid = new IfcObjects("valid");
 
             switch (variable)
             {
-                case "Length":
-                    lengthCheck = true;
+                case var value when value == valid.validVariables[0]:
+                    quantities.Items[0].Checked = true;
                     break;
-                case "Thickness":
-                    thicknessCheck = true;
+                case var value when value == valid.validVariables[1]:
+                    quantities.Items[1].Checked = true;
                     break;
-                case "AreaOfOpenings":
-                    areaOfOpeningsCheck = true;
+                case var value when value == valid.validVariables[2]:
+                    quantities.Items[2].Checked = true;
                     break;
-                case "NetArea":
-                    netAreaCheck = true;
+                case var value when value == valid.validVariables[3]:
+                    quantities.Items[3].Checked = true;
                     break;
-                case "GrossArea":
-                    grossAreaCheck = true;
+                case var value when value == valid.validVariables[4]:
+                    quantities.Items[4].Checked = true;
                     break;
-                case "Volume":
-                    volumeCheck = true;
+                case var value when value == valid.validVariables[5]:
+                    quantities.Items[5].Checked = true;
                     break;
-                case "Count":
-                    countCheck = true;
+                case var value when value == valid.validVariables[6]:
+                    quantities.Items[6].Checked = true;
                     break;
                 default: break;
             }
 
-
-
-
-            listIdentification.Add(AddItemWithSubItem("Unique ID", uniqueID));
-            listIdentification.Add(AddItemWithSubItem("Type ID", typeID));
-            listIdentification.Add(AddItemWithSubItem("Family", family));
-            listIdentification.Add(AddItemWithSubItem("Name", name));
-            listIdentification.Add(AddItemWithSubItem("IFC Type", IFCType));
-            listIdentification.Add(AddItemWithSubItem("Material", material));
-
-            listQuantities.Add(AddItemWithSubItem("Net Area", netArea, netAreaCheck));
-            listQuantities.Add(AddItemWithSubItem("Gross Area", grossArea, grossAreaCheck));
-            listQuantities.Add(AddItemWithSubItem("Area of Openings", areaOfOpenings, areaOfOpeningsCheck));
-            listQuantities.Add(AddItemWithSubItem("Length", length, lengthCheck));
-            listQuantities.Add(AddItemWithSubItem("Thickness", thickness, thicknessCheck));
-            listQuantities.Add(AddItemWithSubItem("Volume", volume, volumeCheck));
-            listQuantities.Add(AddItemWithSubItem("Count", count, countCheck));
-
-
-            identification.Items.AddRange(listIdentification.ToArray());
-            quantities.Items.AddRange(listQuantities.ToArray());
-
-
         }
-
 
         private ListViewItem AddItemWithSubItem(string name, string value, bool check)
         {
@@ -446,11 +446,7 @@ namespace FourDScheduling
                 btnDirectory.Text = folderBrowserDialog.SelectedPath;
             }
 
-
         }
-
-
-
 
         private void btnDirectory_Click(object sender, EventArgs e)
         {
@@ -476,8 +472,6 @@ namespace FourDScheduling
         {
             Hide();
             Parent.Show();
-
-
         }
 
 
@@ -524,123 +518,6 @@ namespace FourDScheduling
 
         }
 
-        private void quantities_MouseUp(object sender, MouseEventArgs e)
-        {
-
-            //if (e.Button == MouseButtons.Left)
-            //{
-            //    var item = quantities.GetItemAt(e.X, e.Y);
-
-            //    if (item != null)
-            //    {
-            //        if (!item.Checked)
-            //        {
-            //            item.Checked = true;
-            //            for (int i = 0; i < quantities.Items.Count; i++)
-            //            {
-            //                if (i != item.Index)
-            //                {
-            //                    quantities.Items[i].Checked = false;
-            //                }
-            //            }
-            //        }
-
-            //        foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
-            //        {
-            //            foreach (IfcObjects obj in AllInstances)
-            //            {
-            //                if (selectedItem.Name == obj.Id)
-            //                {
-            //                    switch (item.Text)
-            //                    {
-            //                        case "Net Area":
-            //                            obj.variable = obj.validVariables[3];
-            //                            break;
-            //                        case "Gross Area":
-            //                            obj.variable = obj.validVariables[4];
-            //                            break;
-            //                        case "Area of Openings":
-            //                            obj.variable = obj.validVariables[2];
-            //                            break;
-            //                        case "Length":
-            //                            obj.variable = obj.validVariables[0];
-            //                            break;
-            //                        case "Thickness":
-            //                            obj.variable = obj.validVariables[1];
-            //                            break;
-            //                        case "Volume":
-            //                            obj.variable = obj.validVariables[5];
-            //                            break;
-            //                        case "Count":
-            //                            obj.variable = obj.validVariables[6];
-            //                            break;
-            //                        default: break;
-            //                    }
-            //                }
-
-
-            //            }
-            //        }
-
-            //    }
-            //}
-
-
-
-
-
-
-            //int stuff = 0;
-            //bool checking = false;
-
-            //List<ListViewItem> some = new List<ListViewItem>();
-
-            //foreach (ListViewItem item in quantities.Items)
-            //{
-            //    if(item.Checked == true)
-            //    {
-            //        some.Add(item);
-            //        if (stuff == 1)
-            //        {
-            //            checking = true;
-            //            break;
-            //        }
-            //        else
-            //        {
-            //            stuff++;
-            //        }
-            //    }
-            //}
-
-            //if (checking)
-            //{
-            //    List<IfcObjects> obj = new List<IfcObjects>();
-
-
-
-            //    foreach (var id in some)
-            //    {
-
-            //        foreach (var ele in AllInstances)
-            //        {
-
-            //            if (id.Name == ele.Id)
-            //            {
-            //                ele.variable = id.Text;
-
-            //                break;
-            //            }
-            //        }
-            //    }
-
-
-
-            //}
-
-
-
-        }
-
         private bool isChecking;
         private bool canCheck = true;
         private void quantities_ItemCheck(object sender, ItemCheckEventArgs e)
@@ -658,6 +535,42 @@ namespace FourDScheduling
                 e.NewValue = CheckState.Checked;
                 canCheck = true;
                 isChecking = false;
+
+                foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
+                {
+                    foreach (IfcObjects obj in AllInstances)
+                    {
+                        if (selectedItem.Name == obj.Id)
+                        {
+                            switch (e.Index)
+                            {
+                                case 0:
+                                    obj.variable = obj.validVariables[0];
+                                    break;
+                                case 1:
+                                    obj.variable = obj.validVariables[1];
+                                    break;
+                                case 2:
+                                    obj.variable = obj.validVariables[2];
+                                    break;
+                                case 3:
+                                    obj.variable = obj.validVariables[3];
+                                    break;
+                                case 4:
+                                    obj.variable = obj.validVariables[4];
+                                    break;
+                                case 5:
+                                    obj.variable = obj.validVariables[5];
+                                    break;
+                                case 6:
+                                    obj.variable = obj.validVariables[6];
+                                    break;
+                                default: break;
+                            }
+                        }
+                    }
+                }
+
             }
             else
             {
@@ -671,96 +584,6 @@ namespace FourDScheduling
                 }
             }
 
-            //e.NewValue = CheckState.Unchecked;
-
-            //if(e.NewValue != CheckState.Checked)
-            //{
-            //    e.NewValue = CheckState.Checked;
-            //    quantities.Items[e.Index].Checked = true;
-            //    //quantities.RedrawItems(e.Index, e.Index, false);
-            //}
-            //else if(e.NewValue == CheckState.Checked)
-            //{
-            //    foreach (ListViewItem item in quantities.CheckedItems)
-            //    {
-            //        if (item.Index != e.Index)
-            //        {
-            //            item.Checked = false;
-            //            quantities.RedrawItems(item.Index, item.Index, true);
-            //        }
-            //    }
-            //}
-
-            //try
-            //{
-            //    foreach (ListViewItem item in quantities.Items)
-            //    {
-            //        item.Checked = false;
-            //    }
-            //}catch{ }
-
-
-
-        }
-
-        private void quantities_Click(object sender, EventArgs e)
-        {
-            //if (e.Button == MouseButtons.Left)
-            //{
-            //    var item = quantities.GetItemAt(e.X, e.Y);
-            //    if (item != null)
-            //    {
-            //        if (!item.Checked)
-            //        {
-            //            item.Checked = true;
-            //            for (int i = 0; i < quantities.Items.Count; i++)
-            //            {
-            //                if (i != item.Index)
-            //                {
-            //                    quantities.Items[i].Checked = false;
-            //                }
-            //            }
-            //        }
-
-            //        foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
-            //        {
-            //            foreach (IfcObjects obj in AllInstances)
-            //            {
-            //                if (selectedItem.Name == obj.Id)
-            //                {
-            //                    switch (item.Text)
-            //                    {
-            //                        case "Net Area":
-            //                            obj.variable = obj.validVariables[3];
-            //                            break;
-            //                        case "Gross Area":
-            //                            obj.variable = obj.validVariables[4];
-            //                            break;
-            //                        case "Area of Openings":
-            //                            obj.variable = obj.validVariables[2];
-            //                            break;
-            //                        case "Length":
-            //                            obj.variable = obj.validVariables[0];
-            //                            break;
-            //                        case "Thickness":
-            //                            obj.variable = obj.validVariables[1];
-            //                            break;
-            //                        case "Volume":
-            //                            obj.variable = obj.validVariables[5];
-            //                            break;
-            //                        case "Count":
-            //                            obj.variable = obj.validVariables[6];
-            //                            break;
-            //                        default: break;
-            //                    }
-            //                }
-
-
-            //            }
-            //        }
-
-            //    }
-            //}
         }
 
         private void changeChecked(ListViewItem item)
@@ -834,58 +657,11 @@ namespace FourDScheduling
                 {
                     if (!item.Checked)
                     {
+                        
                         item.Checked = true;
-                        for (int i = 0; i < quantities.Items.Count; i++)
-                        {
-                            if (i != item.Index)
-                            {
-                                quantities.Items[i].Checked = false;
-                            }
-                        }
-
-                        foreach (ListViewItem selectedItem in listOfElements.SelectedItems)
-                        {
-                            foreach (IfcObjects obj in AllInstances)
-                            {
-                                if (selectedItem.Name == obj.Id)
-                                {
-                                    switch (item.Text)
-                                    {
-                                        case "Net Area":
-                                            obj.variable = obj.validVariables[3];
-                                            break;
-                                        case "Gross Area":
-                                            obj.variable = obj.validVariables[4];
-                                            break;
-                                        case "Area of Openings":
-                                            obj.variable = obj.validVariables[2];
-                                            break;
-                                        case "Length":
-                                            obj.variable = obj.validVariables[0];
-                                            break;
-                                        case "Thickness":
-                                            obj.variable = obj.validVariables[1];
-                                            break;
-                                        case "Volume":
-                                            obj.variable = obj.validVariables[5];
-                                            break;
-                                        case "Count":
-                                            obj.variable = obj.validVariables[6];
-                                            break;
-                                        default: break;
-                                    }
-                                }
-
-
-                            }
-                        }
 
                     }
-                    item.Checked = true;
-
                     
-
-
                 }
             }
         }
@@ -895,56 +671,101 @@ namespace FourDScheduling
             
         }
 
+
+        private bool listRunning = false;
         private void listOfElements_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            var allProducts = ifcViewer.Model.Instances.OfType<IIfcProduct>();
-            var selection = ifcViewer.SelectedEntity;
-            ListViewItem selectedItem = e.Item;
 
-            if (selection == null)
+            
+
+            
+            if (e.IsSelected && !ifcViewerRunning)
             {
-                foreach (var ifcItem in allProducts)
-                {
-                    
-                    if (ifcItem.GlobalId == selectedItem.Name)
-                    {
-                        ifcViewer.SelectedEntity = ifcItem;
+                listRunning = true;
+                var allProducts = ifcViewer.Model.Instances.OfType<IIfcProduct>();
+                var selection = ifcViewer.SelectedEntity;
+                ListViewItem selectedItem = e.Item;
 
-                        break;
+                if (selection == null)
+                {
+                    foreach (var ifcItem in allProducts)
+                    {
+
+                        if (ifcItem.GlobalId == selectedItem.Name)
+                        {
+                            ifcViewer.SelectedEntity =  ifcItem;
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
-                var productSelection = selection.Model.Instances.OfType<IIfcProduct>();
-
-                foreach (var ifcItem in allProducts)
+                else
                 {
-                    
-                    if (ifcItem.GlobalId == selectedItem.Name)
+                    var productSelection = selection.Model.Instances.OfType<IIfcProduct>();
+
+                    foreach (var ifcItem in allProducts)
                     {
-                        
 
-                        ifcViewer.SelectedEntity = ifcItem;
+                        if (ifcItem.GlobalId == selectedItem.Name)
+                        {
 
-                        break;
+
+                            
+
+                            break;
+                        }
                     }
                 }
 
-
-
+                listRunning = false;
             }
-
-
+            
         }
 
+
+        private bool ifcViewerRunning = false;
         private void ifcViewer_SelectedEntityChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            var test = e.AddedItems;
+            
+            if (!listRunning)
+            {
+                ifcViewerRunning = true;
+
+                var fullSelection = ifcViewer.Selection.OfType<IIfcProduct>().ToList();
+
+                if (fullSelection.Count != 0)
+                {
+                    
+
+                    var aItem = e.AddedItems.OfType<IIfcProduct>();
+
+                    var items = listOfElements.Items;
+
+                    listOfElements.SelectedItems.Clear();
 
 
+                    foreach (IIfcProduct a in fullSelection)
+                    {
+                        foreach (ListViewItem item in items)
+                        {
+                            if (a.GlobalId == item.Name)
+                            {
+                                item.Selected = true;
+                                break;
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    listOfElements.SelectedItems.Clear();
+                }
+
+                ifcViewerRunning = false;
+            }
+            
         }
 
-
     }
+
 }

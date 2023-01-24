@@ -25,7 +25,7 @@ namespace FourDScheduling.Models
 
         public int Count { get; set; } = 1;
 
-        public readonly string[] validVariables = { "Length", "Thickness", "AreaOfOpenings", "NetArea", "GrossArea", "Volume", "Count" };
+        public readonly string[] validVariables = { "NetArea", "GrossArea", "AreaOfOpenings", "Length", "Thickness", "Volume", "Count" };
         private string _variable;
 
         public string variable
@@ -77,7 +77,7 @@ namespace FourDScheduling.Models
                     variable = validVariables[6];
                     break;
                 case IIfcWall _:
-                    variable = validVariables[3];
+                    variable = validVariables[0];
                     break;
                 case IIfcDoor _:
                     variable = validVariables[6];
@@ -86,10 +86,10 @@ namespace FourDScheduling.Models
                     variable = validVariables[6];
                     break;
                 case IIfcSlab _:
-                    variable = validVariables[3];
+                    variable = validVariables[0];
                     break;
                 case IIfcRoof _:
-                    variable = validVariables[3];
+                    variable = validVariables[0];
                     break;
                 case IIfcFooting _:
                     variable = validVariables[5];
