@@ -185,7 +185,6 @@ namespace FourDScheduling
             {
                 IfcObjects element = AllInstances.FirstOrDefault(x => x.Id == strings[0]);
 
-
                 uniqueID = element.Id;
                 typeID = element.TypeId;
                 family = element.FamilyName;
@@ -221,7 +220,6 @@ namespace FourDScheduling
                 List<decimal> countList = new List<decimal>();
 
                 List<string> variableList = new List<string>();
-
 
                 foreach (var id in strings)
                 {
@@ -277,10 +275,7 @@ namespace FourDScheduling
                         break;
                     }
                 }
-
             }
-
-            
 
             identification.Items[0].SubItems[1].Text = uniqueID;
             identification.Items[1].SubItems[1].Text = typeID;
@@ -675,9 +670,6 @@ namespace FourDScheduling
         private bool listRunning = false;
         private void listOfElements_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-
-            
-
             
             if (e.IsSelected && !ifcViewerRunning)
             {
@@ -716,9 +708,16 @@ namespace FourDScheduling
                     }
                 }
 
+                //UpdateItemAdding(e.Item);
+
                 listRunning = false;
             }
-            
+            else if(!e.IsSelected && !ifcViewerRunning)
+            {
+                //UpdateItemSubtracting(e.Item);
+            }
+
+
         }
 
 
@@ -764,6 +763,212 @@ namespace FourDScheduling
                 ifcViewerRunning = false;
             }
             
+        }
+
+        private List<string> uniqueID = new List<string>();
+        private List<string> typeID = new List<string>();
+        private List<string> family = new List<string>();
+        private List<string> nameObj = new List<string>();
+        private List<string> IFCType = new List<string>();
+        private List<string> material = new List<string>();
+
+        private decimal netArea = 0;
+        private decimal grossArea = 0;
+        private decimal areaOfOpenings = 0;
+        private decimal length = 0;
+        private decimal thickness = 0;
+        private decimal volume = 0;
+        private decimal count = 0;
+        private void UpdateItemAdding(ListViewItem item)
+        {
+            string variable = "";
+
+            foreach(IfcObjects obj in AllInstances)
+            {
+                if(obj.Id == item.Name)
+                {
+                    if(obj.Id.Length != 0)
+                    {
+                        uniqueID.Add(obj.Id);
+                    }
+
+                    if (obj.TypeId.Length != 0)
+                    {
+                        typeID.Add(obj.TypeId);
+                    }
+
+                    if (obj.FamilyName.Length != 0)
+                    {
+                        family.Add(obj.FamilyName);
+                    }
+
+                    if (obj.Name.Length != 0)
+                    {
+                        nameObj.Add(obj.Name);
+                    }
+
+                    netArea += (obj.NetArea == 0 ? 0 : obj.NetArea);
+                    grossArea += (obj.GrossArea == 0 ? 0 : obj.GrossArea);
+                    areaOfOpenings += (obj.AreaOfOpenings == 0 ? 0 : obj.AreaOfOpenings);
+                    length += (obj.Length == 0 ? 0 : obj.Length);
+                    thickness += (obj.Thickness == 0 ? 0 : obj.Thickness);
+                    volume += (obj.Volume == 0 ? 0 : obj.Volume);
+                    count += (obj.Count == 0 ? 0 : obj.Count);
+
+                    identification.Items[0].SubItems[1].Text = string.Join(", ",uniqueID);
+                    identification.Items[1].SubItems[1].Text = string.Join(", ", typeID);
+                    identification.Items[2].SubItems[1].Text = string.Join(", ", family);
+                    identification.Items[3].SubItems[1].Text = string.Join(", ", nameObj);
+                    identification.Items[4].SubItems[1].Text = string.Join(", ", IFCType);
+                    identification.Items[5].SubItems[1].Text = string.Join(", ", material);
+
+                    quantities.Items[0].SubItems[1].Text = Math.Round(netArea, 3).ToString() + " " + Units.NetArea;
+                    quantities.Items[1].SubItems[1].Text = Math.Round(grossArea, 3).ToString() + " " + Units.GrossArea;
+                    quantities.Items[2].SubItems[1].Text = Math.Round(areaOfOpenings, 3).ToString() + " " + Units.AreaOfOpenings;
+                    quantities.Items[3].SubItems[1].Text = Math.Round(length, 3).ToString() + " " + Units.Length;
+                    quantities.Items[4].SubItems[1].Text = Math.Round(thickness, 3).ToString() + " " + Units.Thickness;
+                    quantities.Items[5].SubItems[1].Text = Math.Round(volume, 3).ToString() + " " + Units.Volume;
+                    quantities.Items[6].SubItems[1].Text = Math.Round(count, 3).ToString() + " " + Units.Count;
+
+                    IfcObjects valid = new IfcObjects("valid");
+
+                    switch (variable)
+                    {
+                        case var value when value == valid.validVariables[0]:
+                            quantities.Items[0].Checked = true;
+                            break;
+                        case var value when value == valid.validVariables[1]:
+                            quantities.Items[1].Checked = true;
+                            break;
+                        case var value when value == valid.validVariables[2]:
+                            quantities.Items[2].Checked = true;
+                            break;
+                        case var value when value == valid.validVariables[3]:
+                            quantities.Items[3].Checked = true;
+                            break;
+                        case var value when value == valid.validVariables[4]:
+                            quantities.Items[4].Checked = true;
+                            break;
+                        case var value when value == valid.validVariables[5]:
+                            quantities.Items[5].Checked = true;
+                            break;
+                        case var value when value == valid.validVariables[6]:
+                            quantities.Items[6].Checked = true;
+                            break;
+                        default: break;
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        private void UpdateItemSubtracting(ListViewItem item)
+        {
+            string variable = "";
+
+            foreach (IfcObjects obj in AllInstances)
+            {
+                if (obj.Id == item.Name)
+                {
+
+                    if (obj.Id.Length != 0)
+                    {
+                        uniqueID.Remove(obj.Id);
+                    }
+
+                    if (obj.TypeId.Length != 0)
+                    {
+                        typeID.Remove(obj.TypeId);
+                    }
+
+                    if (obj.FamilyName.Length != 0)
+                    {
+                        family.Remove(obj.FamilyName);
+                    }
+
+                    if (obj.Name.Length != 0)
+                    {
+                        nameObj.Remove(obj.Name);
+                    }
+
+
+                    netArea -= (obj.NetArea == 0 ? 0 : obj.NetArea);
+                    grossArea -= (obj.GrossArea == 0 ? 0 : obj.GrossArea);
+                    areaOfOpenings -= (obj.AreaOfOpenings == 0 ? 0 : obj.AreaOfOpenings);
+                    length -= (obj.Length == 0 ? 0 : obj.Length);
+                    thickness -= (obj.Thickness == 0 ? 0 : obj.Thickness);
+                    volume -= (obj.Volume == 0 ? 0 : obj.Volume);
+                    count -= (obj.Count == 0 ? 0 : obj.Count);
+
+
+
+
+                    
+                    identification.Items[0].SubItems[1].Text = string.Join(", ", uniqueID);
+                    identification.Items[1].SubItems[1].Text = string.Join(", ", typeID);
+                    identification.Items[2].SubItems[1].Text = string.Join(", ", family);
+                    identification.Items[3].SubItems[1].Text = string.Join(", ", nameObj);
+                    identification.Items[4].SubItems[1].Text = "";
+                    identification.Items[5].SubItems[1].Text = "";
+
+                    quantities.Items[0].SubItems[1].Text = Math.Round(netArea, 3).ToString() + " " + Units.NetArea;
+                    quantities.Items[1].SubItems[1].Text = Math.Round(grossArea, 3).ToString() + " " + Units.GrossArea;
+                    quantities.Items[2].SubItems[1].Text = Math.Round(areaOfOpenings, 3).ToString() + " " + Units.AreaOfOpenings;
+                    quantities.Items[3].SubItems[1].Text = Math.Round(length, 3).ToString() + " " + Units.Length;
+                    quantities.Items[4].SubItems[1].Text = Math.Round(thickness, 3).ToString() + " " + Units.Thickness;
+                    quantities.Items[5].SubItems[1].Text = Math.Round(volume, 3).ToString() + " " + Units.Volume;
+                    quantities.Items[6].SubItems[1].Text = Math.Round(count, 3).ToString() + " " + Units.Count;
+
+                    switch (variable)
+                    {
+                        case var value when value == obj.validVariables[0]:
+                            quantities.Items[0].Checked = true;
+                            break;
+                        case var value when value == obj.validVariables[1]:
+                            quantities.Items[1].Checked = true;
+                            break;
+                        case var value when value == obj.validVariables[2]:
+                            quantities.Items[2].Checked = true;
+                            break;
+                        case var value when value == obj.validVariables[3]:
+                            quantities.Items[3].Checked = true;
+                            break;
+                        case var value when value == obj.validVariables[4]:
+                            quantities.Items[4].Checked = true;
+                            break;
+                        case var value when value == obj.validVariables[5]:
+                            quantities.Items[5].Checked = true;
+                            break;
+                        case var value when value == obj.validVariables[6]:
+                            quantities.Items[6].Checked = true;
+                            break;
+                        default: break;
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        private string RemoveStringWithATwist(string original, string removing)
+        {
+            int indexer = original.IndexOf(removing);
+
+            if (indexer == 0)
+            {
+                return original.Remove(indexer, removing.Length + 2);
+            }
+            else if (original.Length - removing.Length -1 == indexer)
+            {
+                return original.Remove(indexer - 2);
+            }
+            else
+            {
+                return original.Remove(indexer, removing.Length);
+            }
+
+
         }
 
     }
