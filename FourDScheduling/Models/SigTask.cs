@@ -28,7 +28,7 @@ namespace FourDScheduling.Models
             Classification = obj.TypeId;
             Name = obj.Name;
 
-            switch (obj.variable)
+            switch (obj.Variabel)
             {
                 case "Length":
                     Quantity = obj.Length.ToString();

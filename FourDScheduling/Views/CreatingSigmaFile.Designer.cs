@@ -81,7 +81,6 @@
             this.listOfElements.TabIndex = 1;
             this.listOfElements.UseCompatibleStateImageBehavior = false;
             this.listOfElements.View = System.Windows.Forms.View.Details;
-            this.listOfElements.SelectedIndexChanged += new System.EventHandler(this.listOfElements_SelectedIndexChanged);
             // 
             // name
             // 
@@ -152,7 +151,6 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer1_Panel1_Paint);
             // 
             // splitContainer1.Panel2
             // 

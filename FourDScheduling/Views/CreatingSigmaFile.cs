@@ -15,24 +15,17 @@ namespace FourDScheduling
 {
     public partial class CreateSigmaFile : Form
     {
-
         public List<IfcObjects> AllInstances { get; set; }
         public Form Parent { get; }
 
         public CreateSigmaFile(Form parent)
         {
-
             InitializeComponent();
             listOfElements.CheckBoxes = true;
-            listOfElements.MouseUp += ListOfElements_MouseUp;
-            listOfElements.MouseDown += ListOfElements_MouseDown;
 
-            //quantities.MouseUp += quantities_MouseUp;
             quantities.CheckBoxes = true;
-            //quantities.ItemChecked;
             quantities.MultiSelect = false;
             quantities.ItemCheck += quantities_ItemCheck;
-            //quantities.ItemChecked += Quantities_ItemChecked;
 
             quantities.MouseDown += quantities_MouseDown;
             listOfElements.ItemSelectionChanged += listOfElements_ItemSelectionChanged;
@@ -41,15 +34,8 @@ namespace FourDScheduling
             ifcViewer.MouseUp += IfcViewer_MouseUp;
             ifcViewer.SelectedEntityChanged += ifcViewer_SelectedEntityChanged;
 
-            identification.ItemSelectionChanged += Identification_ItemSelectionChanged;
-
             FormClosed += OnFormClosed;
             Parent = parent;
-        }
-
-        private void Identification_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
-        {
-
         }
 
         bool tick = false;
@@ -59,15 +45,9 @@ namespace FourDScheduling
             tick = true;
         }
 
-        private void ListOfElements_MouseDown(object sender, MouseEventArgs e)
-        {
-
-            //ifcViewer.SelectedEntity = null;
-        }
-
         private void OnFormClosed(object sender, FormClosedEventArgs e)
         {
-            System.Windows.Forms.Application.Exit();
+            Application.Exit();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -85,8 +65,6 @@ namespace FourDScheduling
             catch { }
 
             ifcViewer.ShowFps = true;
-            
-
             listOfElements.HideSelection = false;
 
             List<ListViewItem> listIdentification = new List<ListViewItem>();
@@ -111,16 +89,9 @@ namespace FourDScheduling
             quantities.Items.AddRange(listQuantities.ToArray());
         }
 
-        private void ListOfElements_MouseUp(object sender, MouseEventArgs e)
-        {
-            
-            
-        }
-
         private void IfcViewer_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            
-            //listOfElements.Focus();
+            listOfElements.Focus();
         }
 
         private ListViewItem AddItemWithSubItem(string name, string value, bool check)
@@ -144,11 +115,6 @@ namespace FourDScheduling
         {
 
             return AddItemWithSubItem(name, value, false);
-        }
-
-        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
         }
 
         private void LoadingIFCGeometry(string ifcPath)
@@ -178,7 +144,6 @@ namespace FourDScheduling
                     }
                 }
             }
-
 
             int groupIndexer = 0;
 
@@ -227,7 +192,6 @@ namespace FourDScheduling
                 btnIFCfile.Text = openFileDialog.FileName;
 
                 LoadingIFCGeometry(btnIFCfile.Text);
-
             }
         }
 
@@ -279,7 +243,6 @@ namespace FourDScheduling
             Parent.Show();
         }
 
-
         private void btnCreateSigmaFile_Click(object sender, EventArgs e)
         {
             if (btnDirectory.Text != "")
@@ -318,7 +281,6 @@ namespace FourDScheduling
 
                 SigAPI.AddSigmaComponent(xmlDoc, sigTask);
 
-
                 using (XmlWriter writer = XmlWriter.Create(btnDirectory.Text + "\\IFC Export.sig", new XmlWriterSettings { Indent = true, IndentChars = "\t", NewLineOnAttributes = true }))
                 {
                     xmlDoc.Save(writer);
@@ -327,7 +289,6 @@ namespace FourDScheduling
                 Hide();
                 Parent.Show();
             }
-
         }
 
         private bool isChecking;
@@ -358,25 +319,25 @@ namespace FourDScheduling
                             switch (e.Index)
                             {
                                 case 0:
-                                    obj.variable = obj.validVariables[0];
+                                    obj.Variabel = obj.validVariables[0];
                                     break;
                                 case 1:
-                                    obj.variable = obj.validVariables[1];
+                                    obj.Variabel = obj.validVariables[1];
                                     break;
                                 case 2:
-                                    obj.variable = obj.validVariables[2];
+                                    obj.Variabel = obj.validVariables[2];
                                     break;
                                 case 3:
-                                    obj.variable = obj.validVariables[3];
+                                    obj.Variabel = obj.validVariables[3];
                                     break;
                                 case 4:
-                                    obj.variable = obj.validVariables[4];
+                                    obj.Variabel = obj.validVariables[4];
                                     break;
                                 case 5:
-                                    obj.variable = obj.validVariables[5];
+                                    obj.Variabel = obj.validVariables[5];
                                     break;
                                 case 6:
-                                    obj.variable = obj.validVariables[6];
+                                    obj.Variabel = obj.validVariables[6];
                                     break;
                                 default: break;
                             }
@@ -417,13 +378,7 @@ namespace FourDScheduling
             }
         }
 
-        private void listOfElements_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-        }
-
         List<IfcObjects> SelectedObjects = new List<IfcObjects>();
-
         private bool updateRunning = false;
         private void UpdateItems()
         {
@@ -468,7 +423,7 @@ namespace FourDScheduling
                     volume.Add(obj.Volume);
                     count.Add(obj.Count);
 
-                    variableList.Add(obj.variable);
+                    variableList.Add(obj.Variabel);
 
                     itemList.Add(obj.Item);
                     productList.Add(obj.Product);
@@ -494,7 +449,6 @@ namespace FourDScheduling
                     }
                 }
 
-
                 ifcViewerRunning = true;
                 listRunning = true;
                 
@@ -512,7 +466,6 @@ namespace FourDScheduling
                         item.Selected = false;
                     }
                 }
-
 
                 foreach (IIfcProduct product in productList)
                 {
@@ -533,7 +486,7 @@ namespace FourDScheduling
                 quantities.Items[1].SubItems[1].Text = Math.Round(grossArea.Sum(), 3).ToString() + " " + Units.GrossArea;
                 quantities.Items[2].SubItems[1].Text = Math.Round(areaOfOpenings.Sum(), 3).ToString() + " " + Units.AreaOfOpenings;
                 quantities.Items[3].SubItems[1].Text = Math.Round(length.Sum(), 3).ToString() + " " + Units.Length;
-                quantities.Items[4].SubItems[1].Text = Math.Round(thickness.Sum(), 3).ToString() + " " + Units.Thickness;
+                quantities.Items[4].SubItems[1].Text = Math.Round(thickness[0], 3).ToString() + " " + Units.Thickness;
                 quantities.Items[5].SubItems[1].Text = Math.Round(volume.Sum(), 3).ToString() + " " + Units.Volume;
                 quantities.Items[6].SubItems[1].Text = count.Sum().ToString() + " " + Units.Count;
 
@@ -589,7 +542,6 @@ namespace FourDScheduling
             updateRunning = false;
         }
 
-
         private bool listRunning = false;
         private void listOfElements_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
@@ -615,15 +567,11 @@ namespace FourDScheduling
                 }
 
                 UpdateItems();
-
-                //UpdateItemAdding(e.Item);
-
                 listRunning = false;
             }
             else if(!e.IsSelected && !ifcViewerRunning && !updateRunning)
             {
                 listRunning = true;
-                //UpdateItemSubtracting(e.Item);
                 foreach (IfcObjects obj in AllInstances)
                 {
                     if (e.Item.Name == obj.Id)
@@ -648,7 +596,6 @@ namespace FourDScheduling
 
                 IIfcProduct pAdded = e.AddedItems.OfType<IIfcProduct>().FirstOrDefault();
                 List<IIfcProduct> List = ifcViewer.Selection.OfType<IIfcProduct>().ToList();
-
 
                 if (pAdded != null)
                 {
@@ -703,10 +650,7 @@ namespace FourDScheduling
                         SelectedObjects.Remove(i);
                         UpdateItems();
                     }
-                    
-                    
                 }
-
                 ifcViewerRunning = false;
             }
         }

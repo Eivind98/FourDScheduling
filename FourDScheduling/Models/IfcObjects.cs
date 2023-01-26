@@ -31,12 +31,10 @@ namespace FourDScheduling.Models
         public ListViewItem Item { get; set; }
         public IIfcProduct Product { get; set; }
 
-
-
         public readonly string[] validVariables = { "NetArea", "GrossArea", "AreaOfOpenings", "Length", "Thickness", "Volume", "Count" };
         private string _variable;
 
-        public string variable
+        public string Variabel
         {
             get { return _variable; }
             set
@@ -48,10 +46,7 @@ namespace FourDScheduling.Models
             }
         }
 
-
-
         private static Regex bimSevenAARegex = new Regex(@"(.{3,}):(((\d{6})(\.\d+)?\s)?(.+)):(\d{6})");
-
 
         public IfcObjects(string name)
         {
@@ -72,13 +67,14 @@ namespace FourDScheduling.Models
             IfcType = product.ExpressType.Name;
             Material = (product.Material as IIfcMaterial)?.Name;
 
-
-
             Id = product.GlobalId;
             Length = IfcAPI.GetLength(product);
             NetArea = IfcAPI.GetNetArea(product);
             GrossArea = IfcAPI.GetGrossArea(product);
             Volume = IfcAPI.GetVolume(product);
+            Thickness = IfcAPI.GetThickness(product);
+            AreaOfOpenings = Math.Round(GrossArea - NetArea, 6);
+
             Chosen = TypeId == "" ? false : true;
             Product = product;
 
@@ -86,25 +82,25 @@ namespace FourDScheduling.Models
             switch (product)
             {
                 case IIfcWindow _:
-                    variable = validVariables[6];
+                    Variabel = validVariables[6];
                     break;
                 case IIfcWall _:
-                    variable = validVariables[0];
+                    Variabel = validVariables[0];
                     break;
                 case IIfcDoor _:
-                    variable = validVariables[6];
+                    Variabel = validVariables[6];
                     break;
                 case IIfcStairFlight _:
-                    variable = validVariables[6];
+                    Variabel = validVariables[6];
                     break;
                 case IIfcSlab _:
-                    variable = validVariables[0];
+                    Variabel = validVariables[0];
                     break;
                 case IIfcRoof _:
-                    variable = validVariables[0];
+                    Variabel = validVariables[0];
                     break;
                 case IIfcFooting _:
-                    variable = validVariables[5];
+                    Variabel = validVariables[5];
                     break;
                 default:
 
@@ -113,7 +109,11 @@ namespace FourDScheduling.Models
             }
         }
 
-
+        /// <summary>
+        /// The list input has to be of the same type to ensure the information is correct.
+        /// The first element in the list will be the input for ID, Name, FamilyName, TypeId, IfcType, Material, Thickness and Variable
+        /// </summary>
+        /// <param name="obj"></param>
         public IfcObjects(List<IfcObjects> obj)
         {
             Id = obj.First().Id;
@@ -123,14 +123,15 @@ namespace FourDScheduling.Models
             IfcType = obj.First().IfcType;
             Material = obj.First().Material;
 
-
             Length = obj.Sum(x => x.Length);
             NetArea = obj.Sum(x => x.NetArea);
             GrossArea = obj.Sum(x => x.GrossArea);
             Volume = obj.Sum(x => x.Volume);
+            AreaOfOpenings = obj.Sum(x => x.AreaOfOpenings);
+            Thickness = obj.First().Thickness;
             Count = obj.Sum(x => x.Count);
 
-            variable = obj.First().variable;
+            Variabel = obj.First().Variabel;
         }
 
 

@@ -8,11 +8,40 @@ using Xbim.Presentation;
 using Xbim.Common;
 using Xbim.Common.Geometry;
 using FourDScheduling.Models;
+using Xbim.Ifc4.MeasureResource;
 
 namespace FourDScheduling.Services
 {
     public class IfcAPI
     {
+
+        public static decimal GetThickness(IIfcProduct product)
+        {
+            string nameOfProperty = "Depth";
+
+            switch (product)
+            {
+                case IIfcProduct p when p is IIfcSlab || p is IIfcRoof:
+                    nameOfProperty = "Depth";
+                    break;
+                case IIfcProduct p when p is IIfcWall:
+                    nameOfProperty = "Width";
+                    break;
+                case IIfcProduct p when p is IIfcDoor || p is IIfcWindow:
+                    nameOfProperty = "Width";
+                    break;
+                default:
+                    nameOfProperty = "Width";
+                    break;
+
+            }
+
+            var value = GetPropertyQuantities<IIfcQuantityLength>(product, nameOfProperty)?.LengthValue.ToString() ?? "0";
+            return decimal.Parse(value, CultureInfo.InvariantCulture);
+
+        }
+
+
         //from another project
         public static decimal GetNetArea(IIfcProduct product)
         {
