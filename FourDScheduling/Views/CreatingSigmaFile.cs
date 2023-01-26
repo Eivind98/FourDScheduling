@@ -1,25 +1,15 @@
 ﻿using FourDScheduling.Models;
 using FourDScheduling.Services;
-using PropertyTools.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Media.Media3D;
 using System.Xml;
-using Xbim.Common;
 using Xbim.Ifc;
-using Xbim.Ifc4.DateTimeResource;
 using Xbim.Ifc4.Interfaces;
-using Xbim.Ifc4.PresentationAppearanceResource;
 using Xbim.ModelGeometry.Scene;
-using Xbim.Presentation;
-using Xbim.Presentation.LayerStyling;
-using static System.Windows.Forms.MonthCalendar;
-using static Xbim.Presentation.DrawingControl3D;
 
 namespace FourDScheduling
 {
@@ -444,7 +434,7 @@ namespace FourDScheduling
                 List<string> typeID = new List<string>();
                 List<string> family = new List<string>();
                 List<string> name = new List<string>();
-                List<string> IFCType = new List<string>();
+                List<string> ifcType = new List<string>();
                 List<string> material = new List<string>();
 
                 List<decimal> netArea = new List<decimal>();
@@ -467,6 +457,8 @@ namespace FourDScheduling
                     typeID.Add(obj.TypeId);
                     family.Add(obj.FamilyName);
                     name.Add(obj.Name);
+                    ifcType.Add(obj.IfcType);
+                    material.Add(obj.Material);
 
                     netArea.Add(obj.NetArea);
                     grossArea.Add(obj.GrossArea);
@@ -534,7 +526,7 @@ namespace FourDScheduling
                 identification.Items[1].SubItems[1].Text = string.Join(", ", typeID);
                 identification.Items[2].SubItems[1].Text = string.Join(", ", family);
                 identification.Items[3].SubItems[1].Text = string.Join(", ", name);
-                identification.Items[4].SubItems[1].Text = string.Join(", ", IFCType);
+                identification.Items[4].SubItems[1].Text = string.Join(", ", ifcType);
                 identification.Items[5].SubItems[1].Text = string.Join(", ", material);
 
                 quantities.Items[0].SubItems[1].Text = Math.Round(netArea.Sum(), 3).ToString() + " " + Units.NetArea;

@@ -35,7 +35,7 @@ namespace FourDScheduling.Services
 
             }
 
-            var value = GetProperty<IIfcQuantityArea>(product, nameOfProperty)?.AreaValue.ToString() ?? "0";
+            var value = GetPropertyQuantities<IIfcQuantityArea>(product, nameOfProperty)?.AreaValue.ToString() ?? "0";
             return decimal.Parse(value, CultureInfo.InvariantCulture);
 
         }
@@ -61,14 +61,14 @@ namespace FourDScheduling.Services
 
             }
 
-            var value = GetProperty<IIfcQuantityArea>(product, nameOfProperty)?.AreaValue.ToString() ?? "0";
+            var value = GetPropertyQuantities<IIfcQuantityArea>(product, nameOfProperty)?.AreaValue.ToString() ?? "0";
             return decimal.Parse(value, CultureInfo.InvariantCulture);
 
         }
 
         public static decimal GetLength(IIfcProduct product)
         {
-            var value = GetProperty<IIfcQuantityLength>(product, "Length")?.LengthValue.ToString() ?? "0";
+            var value = GetPropertyQuantities<IIfcQuantityLength>(product, "Length")?.LengthValue.ToString() ?? "0";
             return decimal.Parse(value, CultureInfo.InvariantCulture);
 
         }
@@ -218,7 +218,7 @@ namespace FourDScheduling.Services
             //    return decimal.Parse(value, CultureInfo.InvariantCulture);
             //}
 
-            var value = GetProperty<IIfcQuantityVolume>(product, "NetVolume")?.VolumeValue.ToString() ?? "0";
+            var value = GetPropertyQuantities<IIfcQuantityVolume>(product, "NetVolume")?.VolumeValue.ToString() ?? "0";
             return decimal.Parse(value, CultureInfo.InvariantCulture);
         }
 
@@ -269,7 +269,7 @@ namespace FourDScheduling.Services
 
                 //lets only consider single value properties. There are also enumerated properties, 
                 //table properties, reference properties, complex properties and other
-                .OfType<IIfcPropertySingleValue>()
+                .OfType<IIfcMaterial>()
 
                 //lets make the name comparison more fuzzy. This might not be the best practise
                 .Where(p =>
@@ -277,11 +277,11 @@ namespace FourDScheduling.Services
                     p.Name.ToString().ToLower().Contains(name.ToLower()))
 
                 //only take the first. In reality you should handle this more carefully.
-                .FirstOrDefault()?.NominalValue;
+                .FirstOrDefault()?.Name;
         }
 
 
-        public static T GetProperty<T>(IIfcProduct product, string name) where T : IIfcPhysicalQuantity
+        public static T GetPropertyQuantities<T>(IIfcProduct product, string name) where T : IIfcPhysicalQuantity
         {
             return
                 product.IsDefinedBy
@@ -295,6 +295,8 @@ namespace FourDScheduling.Services
                     p.Name.ToString().ToLower().Contains(name.ToLower()))
                 .FirstOrDefault();
         }
+
+        
 
 
         public static List<IfcObjects> LoadIfcObjects(string ifcPath)

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Xbim.Ifc4.Interfaces;
+using Xbim.Ifc4.MaterialResource;
 
 namespace FourDScheduling.Models
 {
@@ -16,6 +17,9 @@ namespace FourDScheduling.Models
         public string TypeId { get; private set; }
         public string Name { get; private set; }
         public string FamilyName { get; private set; }
+        public string IfcType { get; private set; }
+        public string Material { get; private set; }
+
         public decimal Length { get; set; }
         public decimal Thickness { get; set; }
         public decimal AreaOfOpenings { get; set; }
@@ -65,6 +69,10 @@ namespace FourDScheduling.Models
             Name = bimSevenAARegex.Match(name).Groups[2].Value;
             FamilyName = bimSevenAARegex.Match(name).Groups[1].Value;
             TypeId = bimSevenAARegex.Match(name).Groups[3].Value;
+            IfcType = product.ExpressType.Name;
+            Material = (product.Material as IIfcMaterial)?.Name;
+
+
 
             Id = product.GlobalId;
             Length = IfcAPI.GetLength(product);
@@ -112,6 +120,8 @@ namespace FourDScheduling.Models
             Name = obj.First().Name;
             FamilyName = obj.First().FamilyName;
             TypeId = obj.First().TypeId;
+            IfcType = obj.First().IfcType;
+            Material = obj.First().Material;
 
 
             Length = obj.Sum(x => x.Length);
