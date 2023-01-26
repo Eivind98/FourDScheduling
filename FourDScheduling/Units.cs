@@ -3,7 +3,7 @@
 
     public static class Units
     {
-        public const string Length = "m";
+        public const string Length = "mm";
         public const string Thickness = "mm";
         public const string AreaOfOpenings = "m2";
         public const string NetArea = "m2";

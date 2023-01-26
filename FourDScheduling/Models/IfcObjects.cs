@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using Xbim.Ifc4.Interfaces;
 
 namespace FourDScheduling.Models
@@ -22,8 +23,11 @@ namespace FourDScheduling.Models
         public decimal GrossArea { get; set; }
         public decimal Volume { get; set; }
         public bool Chosen { get; set; }
-
         public int Count { get; set; } = 1;
+        public ListViewItem Item { get; set; }
+        public IIfcProduct Product { get; set; }
+
+
 
         public readonly string[] validVariables = { "NetArea", "GrossArea", "AreaOfOpenings", "Length", "Thickness", "Volume", "Count" };
         private string _variable;
@@ -68,7 +72,7 @@ namespace FourDScheduling.Models
             GrossArea = IfcAPI.GetGrossArea(product);
             Volume = IfcAPI.GetVolume(product);
             Chosen = TypeId == "" ? false : true;
-
+            Product = product;
 
 
             switch (product)
