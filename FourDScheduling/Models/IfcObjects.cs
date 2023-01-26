@@ -112,11 +112,15 @@ namespace FourDScheduling.Models
             Name = obj.First().Name;
             FamilyName = obj.First().FamilyName;
             TypeId = obj.First().TypeId;
+
+
             Length = obj.Sum(x => x.Length);
             NetArea = obj.Sum(x => x.NetArea);
             GrossArea = obj.Sum(x => x.GrossArea);
             Volume = obj.Sum(x => x.Volume);
             Count = obj.Sum(x => x.Count);
+
+            variable = obj.First().variable;
         }
 
 

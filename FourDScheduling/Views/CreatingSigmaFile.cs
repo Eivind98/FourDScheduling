@@ -62,15 +62,17 @@ namespace FourDScheduling
 
         }
 
+        bool tick = false;
         private void IfcViewer_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             listOfElements.Focus();
+            tick = true;
         }
 
         private void ListOfElements_MouseDown(object sender, MouseEventArgs e)
         {
 
-            ifcViewer.SelectedEntity = null;
+            //ifcViewer.SelectedEntity = null;
         }
 
         private void OnFormClosed(object sender, FormClosedEventArgs e)
@@ -292,25 +294,32 @@ namespace FourDScheduling
         {
             if (btnDirectory.Text != "")
             {
-                List<string> strings = new List<string>();
                 List<SigTask> sigTask = new List<SigTask>();
+                List<IfcObjects> notGrouped = new List<IfcObjects>();
 
                 foreach (ListViewItem item in listOfElements.Items)
                 {
                     if (item.Checked)
                     {
-                        strings.Add(item.Name);
                         foreach (IfcObjects obj in AllInstances)
                         {
-
                             if (item.Name == obj.Id)
                             {
-                                sigTask.Add(new SigTask(obj));
-
+                                notGrouped.Add(obj);
                             }
                         }
                     }
                 }
+
+                var grouped = notGrouped
+                .GroupBy(x => x.Name)
+                .Select(g => new IfcObjects(g.ToList()));
+
+                foreach(IfcObjects obj in grouped)
+                {
+                    sigTask.Add(new SigTask(obj));
+                }
+
                 XmlDocument xmlDoc = new XmlDocument();
 
                 string path = Directory.GetCurrentDirectory() + "\\Template\\Sigma Template.sig";
@@ -345,6 +354,7 @@ namespace FourDScheduling
                         item.Checked = false;
                     }
                 }
+
                 e.NewValue = CheckState.Checked;
                 canCheck = true;
                 isChecking = false;
@@ -448,6 +458,7 @@ namespace FourDScheduling
                 List<string> variableList = new List<string>();
 
                 List<ListViewItem> itemList = new List<ListViewItem>();
+                List<ListViewItem> itemInvertedList = new List<ListViewItem>();
                 List<IIfcProduct> productList = new List<IIfcProduct>();
 
                 foreach (IfcObjects obj in SelectedObjects)
@@ -472,6 +483,14 @@ namespace FourDScheduling
 
                 }
 
+                foreach (IfcObjects obj in AllInstances)
+                {
+                    if (!SelectedObjects.Contains(obj))
+                    {
+                        itemInvertedList.Add(obj.Item);
+                    }
+                }
+
                 string variable = variableList[0];
 
                 foreach (string var in variableList)
@@ -483,16 +502,25 @@ namespace FourDScheduling
                     }
                 }
 
-                listOfElements.SelectedItems.Clear();
-                ifcViewer.Selection.Clear();
 
-                listRunning = true;
                 ifcViewerRunning = true;
-
-                foreach (ListViewItem item in itemList)
+                listRunning = true;
+                
+                foreach(ListViewItem item in itemList)
                 {
-                    item.Selected = true;
+                    if (!item.Selected)
+                    {
+                        item.Selected = true;
+                    }
                 }
+                foreach (ListViewItem item in itemInvertedList)
+                {
+                    if (item.Selected)
+                    {
+                        item.Selected = false;
+                    }
+                }
+
 
                 foreach (IIfcProduct product in productList)
                 {
@@ -627,6 +655,8 @@ namespace FourDScheduling
                 ifcViewerRunning = true;
 
                 IIfcProduct pAdded = e.AddedItems.OfType<IIfcProduct>().FirstOrDefault();
+                List<IIfcProduct> List = ifcViewer.Selection.OfType<IIfcProduct>().ToList();
+
 
                 if (pAdded != null)
                 {
@@ -634,8 +664,15 @@ namespace FourDScheduling
                     {
                         if (pAdded.GlobalId == obj.Id)
                         {
-                            SelectedObjects.Clear();
-                            SelectedObjects.Add(obj);
+                            if(List.Count <= 1)
+                            {
+                                SelectedObjects.Clear();
+                            }
+                            if (!SelectedObjects.Contains(obj))
+                            {
+                                SelectedObjects.Add(obj);
+                            }
+                            
                             break;
                         }
                     }
@@ -643,12 +680,39 @@ namespace FourDScheduling
                     stupidBool = true;
                     ifcViewer.SelectedEntity = pAdded;
                     stupidBool = false;
+                    
                     UpdateItems();
+                    tick = false;
                 }
-                else if (!stupidBool)
+                else if (tick && List.Count == 0)
                 {
                     SelectedObjects.Clear();
                     UpdateItems();
+                    tick = false;
+                }
+                else
+                {
+                    IfcObjects i = null;
+                    foreach (IfcObjects obj in SelectedObjects)
+                    {
+                        foreach (IIfcProduct pr in List)
+                        {
+                            if(obj.Id != pr.GlobalId)
+                            {
+                                i = obj;
+                                
+                                break;
+                            }
+                        }
+                    }
+
+                    if (i != null)
+                    {
+                        SelectedObjects.Remove(i);
+                        UpdateItems();
+                    }
+                    
+                    
                 }
 
                 ifcViewerRunning = false;
