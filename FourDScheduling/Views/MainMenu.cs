@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Xbim.Ifc.Extensions;
+using IWshRuntimeLibrary;
 
 namespace FourDScheduling
 {
@@ -34,6 +35,7 @@ namespace FourDScheduling
             btnMSProjectFilePath.Click += BtnMSProjectFilePath_Click;
             btnMSProjectFilePath1.Click += BtnMSProjectFilePath1_Click;
 
+            btnCreateShortcut.Click += BtnCreateShortcut_Click;
 
             createSigmaFile = new CreateSigmaFile(this);
             BtnCreateMSProjectFile.Enabled = false;
@@ -42,11 +44,12 @@ namespace FourDScheduling
 
             pathToDirectory = AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData;
 
-            pathToDirectory = new string[] { "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\The Folder" };
+            //pathToDirectory = new string[] { "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\The Folder" };
+
+            List<string> projectFiles = new List<string>();
 
             if (pathToDirectory != null)
             {
-                
                 if (Directory.Exists(pathToDirectory[0]))
                 {
                     files = Directory.GetFiles(pathToDirectory[0]);
@@ -54,19 +57,56 @@ namespace FourDScheduling
                     sigFiles = files.Where(f => f.EndsWith(".sig")).ToArray();
                     mppFiles = files.Where(f => f.EndsWith(".mpp")).ToArray();
 
-                    List<string> projectFiles = ifcFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                    projectFiles = ifcFiles.Select(Path.GetFileNameWithoutExtension).ToList();
 
                     projectFiles.Add("Custom");
                     projectDropDown.DataSource = projectFiles;
                     projectDropDown.SelectedIndex = 0;
 
                 }
+                else
+                {
+                    projectFiles.Add("Custom");
+                    projectDropDown.DataSource = projectFiles;
+                    projectDropDown.SelectedIndex = 0;
+                }
+            }
+            else
+            {
+                projectFiles.Add("Custom");
+                projectDropDown.DataSource = projectFiles;
+                projectDropDown.SelectedIndex = 0;
+
+            }
+        }
+
+        private void BtnCreateShortcut_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveShortcutFile = new SaveFileDialog();
+            saveShortcutFile.Filter = "Shortcut files (*.lnk)|*.lnk|All files (*.*)|*.*";
+            saveShortcutFile.FilterIndex = 1;
+            saveShortcutFile.RestoreDirectory = true;
+
+            if (saveShortcutFile.ShowDialog() == DialogResult.OK)
+            {
+                string shortcutFileName = saveShortcutFile.FileName;
+
+                string cmdPath = @"C:\Windows\System32\cmd.exe";
+                string cmdArg = @"/k ""%APPDATA%\Microsoft\Windows\Start^ Menu\Programs\FourDScheduling\FourDScheduling.appref-ms ""%CD%"" & EXIT""";
+                string shortcutPath = shortcutFileName;
+
+                WshShell shell = new WshShell();
+                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
+                shortcut.TargetPath = cmdPath;
+                shortcut.Arguments = cmdArg;
+                shortcut.IconLocation = Directory.GetCurrentDirectory() + "\\Template\\Logo.ico";
+                shortcut.Save();
             }
         }
 
         private void BtnMSProjectFilePath1_Click(object sender, EventArgs e)
         {
-            string filePath = openFileDialog("Choose MS Project file", "Project files|*.mpp|All Files|*.*", Path.GetDirectoryName(Globals.MSProjectFilePath));
+            string filePath = openFileDialog("Choose MS Project file", "Project files|*.mpp|All Files|*.*");
 
             if (filePath != null)
             {
@@ -82,7 +122,7 @@ namespace FourDScheduling
 
         private void BtnMSProjectFilePath_Click(object sender, EventArgs e)
         {
-            string filePath = openFileDialog("Choose MS Project file", "Project files|*.mpp|All Files|*.*", Path.GetDirectoryName(Globals.MSProjectFilePath));
+            string filePath = openFileDialog("Choose MS Project file", "Project files|*.mpp|All Files|*.*");
 
             if (filePath != null)
             {
@@ -98,7 +138,7 @@ namespace FourDScheduling
 
         private void BtnSigmaFilePath1_Click(object sender, EventArgs e)
         {
-            string filePath = openFileDialog("Choose Sigma file", "Sigma files|*.sig|All Files|*.*", Path.GetDirectoryName(Globals.SigmaFilePath));
+            string filePath = openFileDialog("Choose Sigma file", "Sigma files|*.sig|All Files|*.*");
 
             if (filePath != null)
             {
@@ -114,7 +154,7 @@ namespace FourDScheduling
 
         private void BtnSigmaFilePath_Click(object sender, EventArgs e)
         {
-            string filePath = openFileDialog("Choose Sigma file", "Sigma files|*.sig|All Files|*.*", Path.GetDirectoryName(Globals.SigmaFilePath));
+            string filePath = openFileDialog("Choose Sigma file", "Sigma files|*.sig|All Files|*.*");
 
             if (filePath != null)
             {
@@ -130,7 +170,7 @@ namespace FourDScheduling
 
         private void BtnIfcFilePath1_Click(object sender, EventArgs e)
         {
-            string filePath = openFileDialog("Choose IFC file", "IFC files|*.ifc|All Files|*.*", Path.GetDirectoryName(Globals.IfcFilePath));
+            string filePath = openFileDialog("Choose IFC file", "IFC files|*.ifc|All Files|*.*");
 
             if (filePath != null)
             {
@@ -146,7 +186,7 @@ namespace FourDScheduling
 
         private void BtnIfcFilePath_Click(object sender, EventArgs e)
         {
-            string filePath = openFileDialog("Choose IFC file", "IFC files|*.ifc|All Files|*.*", Path.GetDirectoryName(Globals.IfcFilePath));
+            string filePath = openFileDialog("Choose IFC file", "IFC files|*.ifc|All Files|*.*");
 
             if (filePath != null)
             {
@@ -216,7 +256,10 @@ namespace FourDScheduling
                     stupidBool = false;
 
                     updateAllBtnText();
-
+                }
+                else
+                {
+                    updateAllBtnText();
                 }
             }
         }
@@ -237,12 +280,11 @@ namespace FourDScheduling
             return sb.ToString();
         }
 
-        private string openFileDialog(string title, string filter, string path)
+        private string openFileDialog(string title, string filter)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                InitialDirectory = path,
-                RestoreDirectory = false,
+                
                 Multiselect = false,
                 Filter = filter,
                 Title = title
@@ -258,9 +300,7 @@ namespace FourDScheduling
 
         private void updateAllBtnText()
         {
-
-            
-            btnIfcFilePath.Text = shortenString(Globals.IfcFilePath, 38).IsEmpty() 
+            btnIfcFilePath.Text = shortenString(Globals.IfcFilePath, 38).IsEmpty()
                 ? "Choose IFC" 
                 : "IFC: " + shortenString(Globals.IfcFilePath, 38);
 

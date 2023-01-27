@@ -241,7 +241,7 @@
             this.btnCreateShortcut.Name = "btnCreateShortcut";
             this.btnCreateShortcut.Size = new System.Drawing.Size(300, 28);
             this.btnCreateShortcut.TabIndex = 12;
-            this.btnCreateShortcut.Text = "Create Shortcut to Project";
+            this.btnCreateShortcut.Text = "Create Project file";
             this.btnCreateShortcut.UseVisualStyleBackColor = false;
             // 
             // projectDropDown
