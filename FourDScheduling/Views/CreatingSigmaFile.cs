@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
 using Xbim.Ifc;
+using Xbim.Ifc.Extensions;
 using Xbim.Ifc4.Interfaces;
 using Xbim.ModelGeometry.Scene;
 
@@ -16,6 +17,7 @@ namespace FourDScheduling
     public partial class CreateSigmaFile : Form
     {
         public List<IfcObjects> AllInstances { get; set; }
+
         public Form Parent { get; }
 
         public CreateSigmaFile(Form parent)
@@ -53,14 +55,13 @@ namespace FourDScheduling
         private void Form1_Load(object sender, EventArgs e)
         {
             //btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\Revit.ifc";
-            btnIFCfile.Text = Globals.IfcFilePath;
-            btnDirectory.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\Gantt Test\\Testing";
+            btnIFCfile.Text = Helper.shortenString(Globals.IfcFilePath, 40);
+            sigmaSavePath = Globals.IfcFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.IfcFilePath);
+            btnDirectory.Text = Helper.shortenString(sigmaSavePath, 40);
 
             try
             {
-
                 LoadingIFCGeometry(Globals.IfcFilePath);
-
             }
             catch { }
 
@@ -96,7 +97,6 @@ namespace FourDScheduling
 
         private ListViewItem AddItemWithSubItem(string name, string value, bool check)
         {
-
             ListViewItem item = new ListViewItem()
             {
                 Text = name
@@ -113,7 +113,6 @@ namespace FourDScheduling
 
         private ListViewItem AddItemWithSubItem(string name, string value)
         {
-
             return AddItemWithSubItem(name, value, false);
         }
 
@@ -177,7 +176,7 @@ namespace FourDScheduling
             }
         }
 
-
+        private string sigmaSavePath = "";
         private void openFileDialog()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -189,42 +188,36 @@ namespace FourDScheduling
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                btnIFCfile.Text = openFileDialog.FileName;
+                Globals.IfcFilePath = openFileDialog.FileName;
+                btnIFCfile.Text = Helper.shortenString(Globals.IfcFilePath, 40);
 
-                LoadingIFCGeometry(btnIFCfile.Text);
+                LoadingIFCGeometry(Globals.IfcFilePath);
             }
         }
 
-        private void OpenDirectoryDialog()
+        private void OpenSaveFileDialog()
         {
-            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog
-            {
-                ShowNewFolderButton = true
-            };
+            SaveFileDialog saveShortcutFile = new SaveFileDialog();
+            saveShortcutFile.Filter = "Sigma files|*.sig|All files|*.*";
+            saveShortcutFile.FilterIndex = 1;
+            saveShortcutFile.RestoreDirectory = true;
 
-            if (btnDirectory.Text != string.Empty)
+            if (saveShortcutFile.ShowDialog() == DialogResult.OK)
             {
-                folderBrowserDialog.SelectedPath = btnDirectory.Text;
-            }
-            else
-            {
-                folderBrowserDialog.SelectedPath = System.AppDomain.CurrentDomain.BaseDirectory;
-            }
+                sigmaSavePath = saveShortcutFile.FileName;
 
-            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-            {
-                btnDirectory.Text = folderBrowserDialog.SelectedPath;
+                btnDirectory.Text = Helper.shortenString(sigmaSavePath, 40);
             }
         }
 
         private void btnDirectory_Click(object sender, EventArgs e)
         {
-            OpenDirectoryDialog();
+            OpenSaveFileDialog();
         }
 
         private void btnDirectory2_Click(object sender, EventArgs e)
         {
-            OpenDirectoryDialog();
+            OpenSaveFileDialog();
         }
 
         private void btnIFCfile_Click(object sender, EventArgs e)
@@ -245,7 +238,7 @@ namespace FourDScheduling
 
         private void btnCreateSigmaFile_Click(object sender, EventArgs e)
         {
-            if (btnDirectory.Text != "")
+            if (sigmaSavePath != "")
             {
                 List<SigTask> sigTask = new List<SigTask>();
                 List<IfcObjects> notGrouped = new List<IfcObjects>();
@@ -281,7 +274,7 @@ namespace FourDScheduling
 
                 SigAPI.AddSigmaComponent(xmlDoc, sigTask);
 
-                using (XmlWriter writer = XmlWriter.Create(btnDirectory.Text + "\\IFC Export.sig", new XmlWriterSettings { Indent = true, IndentChars = "\t", NewLineOnAttributes = true }))
+                using (XmlWriter writer = XmlWriter.Create(sigmaSavePath, new XmlWriterSettings { Indent = true, IndentChars = "\t", NewLineOnAttributes = true }))
                 {
                     xmlDoc.Save(writer);
                 }
@@ -475,12 +468,12 @@ namespace FourDScheduling
                 listRunning = false;
                 ifcViewerRunning = false;
 
-                identification.Items[0].SubItems[1].Text = string.Join(", ", uniqueID);
-                identification.Items[1].SubItems[1].Text = string.Join(", ", typeID);
-                identification.Items[2].SubItems[1].Text = string.Join(", ", family);
-                identification.Items[3].SubItems[1].Text = string.Join(", ", name);
-                identification.Items[4].SubItems[1].Text = string.Join(", ", ifcType);
-                identification.Items[5].SubItems[1].Text = string.Join(", ", material);
+                identification.Items[0].SubItems[1].Text = string.Join(", ", uniqueID.Where(s => !string.IsNullOrEmpty(s)));
+                identification.Items[1].SubItems[1].Text = string.Join(", ", typeID.Where(s => !string.IsNullOrEmpty(s)));
+                identification.Items[2].SubItems[1].Text = string.Join(", ", family.Where(s => !string.IsNullOrEmpty(s)));
+                identification.Items[3].SubItems[1].Text = string.Join(", ", name.Where(s => !string.IsNullOrEmpty(s)));
+                identification.Items[4].SubItems[1].Text = string.Join(", ", ifcType.Where(s => !string.IsNullOrEmpty(s)));
+                identification.Items[5].SubItems[1].Text = string.Join(", ", material.Where(s => !string.IsNullOrEmpty(s)));
 
                 quantities.Items[0].SubItems[1].Text = Math.Round(netArea.Sum(), 3).ToString() + " " + Units.NetArea;
                 quantities.Items[1].SubItems[1].Text = Math.Round(grossArea.Sum(), 3).ToString() + " " + Units.GrossArea;

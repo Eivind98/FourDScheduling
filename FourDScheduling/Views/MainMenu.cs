@@ -112,8 +112,8 @@ namespace FourDScheduling
             {
                 Globals.MSProjectFilePath = filePath;
                 updateAllBtnText();
-                if (Path.GetDirectoryName(Globals.MSProjectFilePath) != Path.GetDirectoryName(Globals.IfcFilePath)
-                    || Path.GetDirectoryName(Globals.MSProjectFilePath) != Path.GetDirectoryName(Globals.SigmaFilePath))
+                if (Path.GetDirectoryName(Globals.MSProjectFilePath) != (Globals.IfcFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.IfcFilePath))
+                    || Path.GetDirectoryName(Globals.MSProjectFilePath) != (Globals.SigmaFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.SigmaFilePath)))
                 {
                     projectDropDown.SelectedIndex = projectDropDown.Items.Count - 1;
                 }
@@ -128,8 +128,8 @@ namespace FourDScheduling
             {
                 Globals.MSProjectFilePath = filePath;
                 updateAllBtnText();
-                if (Path.GetDirectoryName(Globals.MSProjectFilePath) != Path.GetDirectoryName(Globals.IfcFilePath)
-                    || Path.GetDirectoryName(Globals.MSProjectFilePath) != Path.GetDirectoryName(Globals.SigmaFilePath))
+                if (Path.GetDirectoryName(Globals.MSProjectFilePath) != (Globals.IfcFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.IfcFilePath))
+                    || Path.GetDirectoryName(Globals.MSProjectFilePath) != (Globals.SigmaFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.SigmaFilePath)))
                 {
                     projectDropDown.SelectedIndex = projectDropDown.Items.Count - 1;
                 }
@@ -144,8 +144,8 @@ namespace FourDScheduling
             {
                 Globals.SigmaFilePath = filePath;
                 updateAllBtnText();
-                if (Path.GetDirectoryName(Globals.SigmaFilePath) != Path.GetDirectoryName(Globals.IfcFilePath)
-                    || Path.GetDirectoryName(Globals.SigmaFilePath) != Path.GetDirectoryName(Globals.MSProjectFilePath))
+                if (Path.GetDirectoryName(Globals.SigmaFilePath) != (Globals.IfcFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.IfcFilePath))
+                    || Path.GetDirectoryName(Globals.SigmaFilePath) != (Globals.MSProjectFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.MSProjectFilePath)))
                 {
                     projectDropDown.SelectedIndex = projectDropDown.Items.Count - 1;
                 }
@@ -160,8 +160,8 @@ namespace FourDScheduling
             {
                 Globals.SigmaFilePath = filePath;
                 updateAllBtnText();
-                if (Path.GetDirectoryName(Globals.SigmaFilePath) != Path.GetDirectoryName(Globals.IfcFilePath)
-                    || Path.GetDirectoryName(Globals.SigmaFilePath) != Path.GetDirectoryName(Globals.MSProjectFilePath))
+                if (Path.GetDirectoryName(Globals.SigmaFilePath) != (Globals.IfcFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.IfcFilePath))
+                    || Path.GetDirectoryName(Globals.SigmaFilePath) != (Globals.MSProjectFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.MSProjectFilePath)))
                 {
                     projectDropDown.SelectedIndex = projectDropDown.Items.Count - 1;
                 }
@@ -176,8 +176,8 @@ namespace FourDScheduling
             {
                 Globals.IfcFilePath = filePath;
                 updateAllBtnText();
-                if (Path.GetDirectoryName(Globals.IfcFilePath) != Path.GetDirectoryName(Globals.SigmaFilePath)
-                    || Path.GetDirectoryName(Globals.IfcFilePath) != Path.GetDirectoryName(Globals.MSProjectFilePath))
+                if (Path.GetDirectoryName(Globals.IfcFilePath) != (Globals.SigmaFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.SigmaFilePath))
+                    || Path.GetDirectoryName(Globals.IfcFilePath) != (Globals.MSProjectFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.MSProjectFilePath)))
                 {
                     projectDropDown.SelectedIndex = projectDropDown.Items.Count - 1;
                 }
@@ -192,8 +192,8 @@ namespace FourDScheduling
             {
                 Globals.IfcFilePath = filePath;
                 updateAllBtnText();
-                if (Path.GetDirectoryName(Globals.IfcFilePath) != Path.GetDirectoryName(Globals.SigmaFilePath) 
-                    || Path.GetDirectoryName(Globals.IfcFilePath) != Path.GetDirectoryName(Globals.MSProjectFilePath))
+                if (Path.GetDirectoryName(Globals.IfcFilePath) != (Globals.SigmaFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.SigmaFilePath)) 
+                    || Path.GetDirectoryName(Globals.IfcFilePath) != (Globals.MSProjectFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.MSProjectFilePath)))
                 {
                     projectDropDown.SelectedIndex = projectDropDown.Items.Count - 1;
                 }
@@ -264,21 +264,6 @@ namespace FourDScheduling
             }
         }
 
-        private string shortenString(string orginalString, int maxLength)
-        {
-            StringBuilder sb = new StringBuilder(orginalString);
-            int stringLength = orginalString.Length;
-            
-            if (stringLength > maxLength)
-            {
-                int removeLength = stringLength - maxLength;
-                int removeStart = maxLength / 4;
-                sb.Remove(removeStart, removeLength);
-                sb.Insert(removeStart, "...");
-            }
-
-            return sb.ToString();
-        }
 
         private string openFileDialog(string title, string filter)
         {
@@ -300,17 +285,17 @@ namespace FourDScheduling
 
         private void updateAllBtnText()
         {
-            btnIfcFilePath.Text = shortenString(Globals.IfcFilePath, 38).IsEmpty()
+            btnIfcFilePath.Text = Helper.shortenString(Globals.IfcFilePath, 38).IsEmpty()
                 ? "Choose IFC" 
-                : "IFC: " + shortenString(Globals.IfcFilePath, 38);
+                : "IFC: " + Helper.shortenString(Globals.IfcFilePath, 38);
 
-            btnSigmaFilePath.Text = shortenString(Globals.SigmaFilePath, 38).IsEmpty() 
+            btnSigmaFilePath.Text = Helper.shortenString(Globals.SigmaFilePath, 38).IsEmpty() 
                 ? "Choose Sigma" 
-                : "Sigma: " + shortenString(Globals.SigmaFilePath, 35);
+                : "Sigma: " + Helper.shortenString(Globals.SigmaFilePath, 35);
             
-            btnMSProjectFilePath.Text = shortenString(Globals.MSProjectFilePath, 38).IsEmpty() 
+            btnMSProjectFilePath.Text = Helper.shortenString(Globals.MSProjectFilePath, 38).IsEmpty() 
                 ? "Choose MS Project" 
-                : "MS Project: " + shortenString(Globals.MSProjectFilePath, 30);
+                : "MS Project: " + Helper.shortenString(Globals.MSProjectFilePath, 30);
 
         }
 
