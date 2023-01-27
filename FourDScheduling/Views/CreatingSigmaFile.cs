@@ -53,13 +53,13 @@ namespace FourDScheduling
         private void Form1_Load(object sender, EventArgs e)
         {
             //btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\Revit.ifc";
-            btnIFCfile.Text = "Choose File Path";
+            btnIFCfile.Text = Globals.IfcFilePath;
             btnDirectory.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\Gantt Test\\Testing";
 
             try
             {
 
-                LoadingIFCGeometry(btnIFCfile.Text);
+                LoadingIFCGeometry(Globals.IfcFilePath);
 
             }
             catch { }

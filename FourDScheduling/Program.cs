@@ -12,7 +12,7 @@ namespace FourDScheduling
         {
             //The Program
             Application.EnableVisualStyles();
-            Application.Run(new MainMenu());
+            Application.Run(new MainMenu(args));
         }
     }
 }
