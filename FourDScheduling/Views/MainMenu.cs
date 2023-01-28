@@ -18,7 +18,7 @@ namespace FourDScheduling
         private List<string> ifcFiles;
         private List<string> sigFiles;
         private List<string> mppFiles;
-        private List<string> pathToDirectory;
+        private string[] pathToDirectory;
 
         public MainMenu(string[] args)
         {
@@ -42,9 +42,9 @@ namespace FourDScheduling
             BtnUpdateFiles.Enabled = false;
             BtnIfcViewer.Enabled = false;
 
-            pathToDirectory = AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData.ToList<string>();
+            pathToDirectory = AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData;
 
-            pathToDirectory = new List<string> { "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\The Folder" };
+            //pathToDirectory = new List<string> { "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\The Folder" };
 
             List<string> projectFiles = new List<string>();
 
