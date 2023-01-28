@@ -14,11 +14,11 @@ namespace FourDScheduling
     {
         CreateSigmaFile createSigmaFile;
 
-        private string[] files;
-        private string[] ifcFiles;
-        private string[] sigFiles;
-        private string[] mppFiles;
-        private string[] pathToDirectory;
+        private List<string> files;
+        private List<string> ifcFiles;
+        private List<string> sigFiles;
+        private List<string> mppFiles;
+        private List<string> pathToDirectory;
 
         public MainMenu(string[] args)
         {
@@ -42,9 +42,9 @@ namespace FourDScheduling
             BtnUpdateFiles.Enabled = false;
             BtnIfcViewer.Enabled = false;
 
-            pathToDirectory = AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData;
+            pathToDirectory = AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData.ToList<string>();
 
-            //pathToDirectory = new string[] { "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\The Folder" };
+            pathToDirectory = new List<string> { "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\07 - Prototype\\The Folder" };
 
             List<string> projectFiles = new List<string>();
 
@@ -52,10 +52,10 @@ namespace FourDScheduling
             {
                 if (Directory.Exists(pathToDirectory[0]))
                 {
-                    files = Directory.GetFiles(pathToDirectory[0]);
-                    ifcFiles = files.Where(f => f.EndsWith(".ifc")).ToArray();
-                    sigFiles = files.Where(f => f.EndsWith(".sig")).ToArray();
-                    mppFiles = files.Where(f => f.EndsWith(".mpp")).ToArray();
+                    files = Directory.GetFiles(pathToDirectory[0]).ToList<string>();
+                    ifcFiles = files.Where(f => f.EndsWith(".ifc")).ToList<string>();
+                    sigFiles = files.Where(f => f.EndsWith(".sig")).ToList<string>();
+                    mppFiles = files.Where(f => f.EndsWith(".mpp")).ToList<string>();
 
                     projectFiles = ifcFiles.Select(Path.GetFileNameWithoutExtension).ToList();
 
@@ -219,7 +219,7 @@ namespace FourDScheduling
                             break;
                         }
                     }
-                    if (!stupidBool && Globals.IfcFilePath.IsEmpty())
+                    if (!stupidBool && Globals.IfcFilePath.IsEmpty() && ifcFiles.Count != 0)
                     {
                         Globals.IfcFilePath = ifcFiles[0];
                     }
@@ -234,9 +234,10 @@ namespace FourDScheduling
                             break;
                         }
                     }
-                    if (!stupidBool && Globals.SigmaFilePath.IsEmpty())
+                    if (!stupidBool && Globals.SigmaFilePath.IsEmpty() && sigFiles.Count != 0)
                     {
                         Globals.SigmaFilePath = sigFiles[0];
+
                     }
                     stupidBool = false;
 
@@ -249,20 +250,19 @@ namespace FourDScheduling
                             break;
                         }
                     }
-                    if (!stupidBool && Globals.MSProjectFilePath.IsEmpty())
+                    if (!stupidBool && Globals.MSProjectFilePath.IsEmpty() && mppFiles.Count != 0)
                     {
                         Globals.MSProjectFilePath = mppFiles[0];
                     }
+
                     stupidBool = false;
 
-                    updateAllBtnText();
                 }
-                else
-                {
-                    updateAllBtnText();
-                }
+                updateAllBtnText();
             }
         }
+        
+
 
 
         private string openFileDialog(string title, string filter)
@@ -285,15 +285,15 @@ namespace FourDScheduling
 
         private void updateAllBtnText()
         {
-            btnIfcFilePath.Text = Helper.shortenString(Globals.IfcFilePath, 38).IsEmpty()
+            btnIfcFilePath.Text = Globals.IfcFilePath.IsEmpty()
                 ? "Choose IFC" 
                 : "IFC: " + Helper.shortenString(Globals.IfcFilePath, 38);
 
-            btnSigmaFilePath.Text = Helper.shortenString(Globals.SigmaFilePath, 38).IsEmpty() 
+            btnSigmaFilePath.Text = Globals.SigmaFilePath.IsEmpty() 
                 ? "Choose Sigma" 
                 : "Sigma: " + Helper.shortenString(Globals.SigmaFilePath, 35);
             
-            btnMSProjectFilePath.Text = Helper.shortenString(Globals.MSProjectFilePath, 38).IsEmpty() 
+            btnMSProjectFilePath.Text = Globals.MSProjectFilePath.IsEmpty() 
                 ? "Choose MS Project" 
                 : "MS Project: " + Helper.shortenString(Globals.MSProjectFilePath, 30);
 

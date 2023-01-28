@@ -200,6 +200,7 @@ namespace FourDScheduling
             SaveFileDialog saveShortcutFile = new SaveFileDialog();
             saveShortcutFile.Filter = "Sigma files|*.sig|All files|*.*";
             saveShortcutFile.FilterIndex = 1;
+            saveShortcutFile.InitialDirectory = sigmaSavePath.IsEmpty() ? "" : sigmaSavePath;
             saveShortcutFile.RestoreDirectory = true;
 
             if (saveShortcutFile.ShowDialog() == DialogResult.OK)
