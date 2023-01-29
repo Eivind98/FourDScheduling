@@ -25,7 +25,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>31</ApplicationRevision>
+    <ApplicationRevision>33</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -198,10 +198,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Views\ErrorMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ErrorMessage.Designer.cs">
+      <DependentUpon>ErrorMessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Globals.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Models\Column.cs" />
     <Compile Include="Models\Depend.cs" />
+    <Compile Include="Views\SigmaFileCreated.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\SigmaFileCreated.Designer.cs">
+      <DependentUpon>SigmaFileCreated.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\CreatingSigmaFile.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -234,11 +246,17 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Views\ErrorMessage.resx">
+      <DependentUpon>ErrorMessage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\CreatingSigmaFile.resx">
       <DependentUpon>CreatingSigmaFile.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\MainMenu.resx">
       <DependentUpon>MainMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\SigmaFileCreated.resx">
+      <DependentUpon>SigmaFileCreated.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

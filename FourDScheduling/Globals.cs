@@ -10,6 +10,7 @@ namespace FourDScheduling
     {
         public static string IfcFilePath = "";
         public static string SigmaFilePath = "";
+        public static string SigmaSavePath = "";
         public static string MSProjectFilePath = "";
 
 

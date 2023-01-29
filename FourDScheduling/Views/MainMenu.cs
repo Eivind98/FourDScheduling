@@ -10,8 +10,12 @@ using IWshRuntimeLibrary;
 
 namespace FourDScheduling
 {
+    
+
     public partial class MainMenu : Form
     {
+        public static Form mainM;
+
         CreateSigmaFile createSigmaFile;
 
         private List<string> files;
@@ -23,6 +27,7 @@ namespace FourDScheduling
         public MainMenu(string[] args)
         {
             InitializeComponent();
+            mainM = this;
 
             projectDropDown.SelectedValueChanged += ProjectDropDown_SelectedValueChanged;
             

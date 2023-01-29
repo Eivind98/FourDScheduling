@@ -10,19 +10,26 @@ using System.Xml;
 using Xbim.Ifc;
 using Xbim.Ifc.Extensions;
 using Xbim.Ifc4.Interfaces;
+using Xbim.IO.Xml.BsConf;
 using Xbim.ModelGeometry.Scene;
 
 namespace FourDScheduling
 {
     public partial class CreateSigmaFile : Form
     {
+
         public List<IfcObjects> AllInstances { get; set; }
 
         public Form Parent { get; }
 
+        SigmaFileCreated sigmaFileCreated;
+
         public CreateSigmaFile(Form parent)
         {
             InitializeComponent();
+            sigmaFileCreated = new SigmaFileCreated(this);
+
+
             listOfElements.CheckBoxes = true;
 
             quantities.CheckBoxes = true;
@@ -56,8 +63,8 @@ namespace FourDScheduling
         {
             //btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\Revit.ifc";
             btnIFCfile.Text = Helper.shortenString(Globals.IfcFilePath, 40);
-            sigmaSavePath = Globals.IfcFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.IfcFilePath);
-            btnDirectory.Text = Helper.shortenString(sigmaSavePath, 40);
+            Globals.SigmaSavePath = Globals.IfcFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.IfcFilePath);
+            btnDirectory.Text = Helper.shortenString(Globals.SigmaSavePath, 40);
 
             try
             {
@@ -176,7 +183,6 @@ namespace FourDScheduling
             }
         }
 
-        private string sigmaSavePath = "";
         private void openFileDialog()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -200,14 +206,14 @@ namespace FourDScheduling
             SaveFileDialog saveShortcutFile = new SaveFileDialog();
             saveShortcutFile.Filter = "Sigma files|*.sig|All files|*.*";
             saveShortcutFile.FilterIndex = 1;
-            saveShortcutFile.InitialDirectory = sigmaSavePath.IsEmpty() ? "" : sigmaSavePath;
+            saveShortcutFile.InitialDirectory = Globals.SigmaSavePath.IsEmpty() ? "" : Globals.SigmaSavePath;
             saveShortcutFile.RestoreDirectory = true;
 
             if (saveShortcutFile.ShowDialog() == DialogResult.OK)
             {
-                sigmaSavePath = saveShortcutFile.FileName;
+                Globals.SigmaSavePath = saveShortcutFile.FileName;
 
-                btnDirectory.Text = Helper.shortenString(sigmaSavePath, 40);
+                btnDirectory.Text = Helper.shortenString(Globals.SigmaSavePath, 40);
             }
         }
 
@@ -239,7 +245,7 @@ namespace FourDScheduling
 
         private void btnCreateSigmaFile_Click(object sender, EventArgs e)
         {
-            if (sigmaSavePath != "")
+            if (Globals.SigmaSavePath != "")
             {
                 List<SigTask> sigTask = new List<SigTask>();
                 List<IfcObjects> notGrouped = new List<IfcObjects>();
@@ -275,13 +281,29 @@ namespace FourDScheduling
 
                 SigAPI.AddSigmaComponent(xmlDoc, sigTask);
 
-                using (XmlWriter writer = XmlWriter.Create(sigmaSavePath, new XmlWriterSettings { Indent = true, IndentChars = "\t", NewLineOnAttributes = true }))
+                if (!Path.HasExtension(Globals.SigmaSavePath))
                 {
-                    xmlDoc.Save(writer);
+                    Globals.SigmaSavePath += @"\ÍFC Eksport.sig";
                 }
 
-                Hide();
-                Parent.Show();
+                try
+                {
+                    using (XmlWriter writer = XmlWriter.Create(Globals.SigmaSavePath, new XmlWriterSettings { Indent = true, IndentChars = "\t", NewLineOnAttributes = true }))
+                    {
+                        xmlDoc.Save(writer);
+                    }
+
+                    Hide();
+                    sigmaFileCreated.Show();
+                }
+                catch
+                {
+                    
+                    ErrorMessage error = new ErrorMessage("File is open in another program");
+                    error.ShowDialog();
+
+                }
+                
             }
         }
 
