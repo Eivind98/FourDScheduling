@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CreateSigmaFile));
             this.listOfElements = new System.Windows.Forms.ListView();
             this.name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.identification = new System.Windows.Forms.ListView();
@@ -312,6 +313,7 @@
             this.Controls.Add(this.btnCreateSigmaFile);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(900, 520);
             this.Name = "CreateSigmaFile";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

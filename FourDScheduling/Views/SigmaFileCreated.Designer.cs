@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SigmaFileCreated));
             this.BtnGoToMainMenu = new System.Windows.Forms.Button();
             this.BtnOpenDirectory = new System.Windows.Forms.Button();
             this.Text = new System.Windows.Forms.Label();
@@ -123,6 +124,7 @@
             this.Controls.Add(this.BtnOpenDirectory);
             this.Controls.Add(this.BtnGoToMainMenu);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SigmaFileCreated";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.ResumeLayout(false);

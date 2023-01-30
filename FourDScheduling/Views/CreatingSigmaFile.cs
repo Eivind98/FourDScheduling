@@ -17,7 +17,6 @@ namespace FourDScheduling
 {
     public partial class CreateSigmaFile : Form
     {
-
         public List<IfcObjects> AllInstances { get; set; }
 
         public Form Parent { get; }
@@ -29,6 +28,9 @@ namespace FourDScheduling
             InitializeComponent();
             sigmaFileCreated = new SigmaFileCreated(this);
 
+            this.VisibleChanged += CreateSigmaFile_VisibleChanged;
+
+            firstStartUp = true;
 
             listOfElements.CheckBoxes = true;
 
@@ -47,6 +49,24 @@ namespace FourDScheduling
             Parent = parent;
         }
 
+        bool firstStartUp = false;
+        string lastIFcFileAdded = "";
+        private void CreateSigmaFile_VisibleChanged(object sender, EventArgs e)
+        {
+            if (this.Visible && Path.GetFileName(Globals.IfcFilePath) != Path.GetFileName(lastIFcFileAdded) && !firstStartUp)
+            {
+                Helper.shortenString(btnIFCfile, Globals.IfcFilePath);
+
+                try
+                {
+                    LoadingIFCGeometry(Globals.IfcFilePath);
+                }
+                catch { }
+
+            }
+            firstStartUp = false;
+        }
+
         bool tick = false;
         private void IfcViewer_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -62,9 +82,9 @@ namespace FourDScheduling
         private void Form1_Load(object sender, EventArgs e)
         {
             //btnIFCfile.Text = "C:\\Users\\eev_9\\OneDrive\\01 - Skúli\\05 - BLBI_Feb 2021 -\\Sem. 4\\99 - Andet\\Gantt Test\\Revit.ifc";
-            btnIFCfile.Text = Helper.shortenString(Globals.IfcFilePath, 40);
+            Helper.shortenString(btnIFCfile, Globals.IfcFilePath);
             Globals.SigmaSavePath = Globals.IfcFilePath.IsEmpty() ? "" : Path.GetDirectoryName(Globals.IfcFilePath);
-            btnDirectory.Text = Helper.shortenString(Globals.SigmaSavePath, 40);
+            Helper.shortenString(btnDirectory, Globals.SigmaSavePath);
 
             try
             {
@@ -126,6 +146,8 @@ namespace FourDScheduling
         private void LoadingIFCGeometry(string ifcPath)
         {
             IfcStore ifcModel = IfcStore.Open(ifcPath);
+
+            lastIFcFileAdded = ifcPath;
 
             var context = new Xbim3DModelContext(ifcModel);
             context.CreateContext();
@@ -195,7 +217,7 @@ namespace FourDScheduling
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 Globals.IfcFilePath = openFileDialog.FileName;
-                btnIFCfile.Text = Helper.shortenString(Globals.IfcFilePath, 40);
+                Helper.shortenString(btnIFCfile, Globals.IfcFilePath);
 
                 LoadingIFCGeometry(Globals.IfcFilePath);
             }
@@ -213,7 +235,7 @@ namespace FourDScheduling
             {
                 Globals.SigmaSavePath = saveShortcutFile.FileName;
 
-                btnDirectory.Text = Helper.shortenString(Globals.SigmaSavePath, 40);
+                Helper.shortenString(btnDirectory, Globals.SigmaSavePath);
             }
         }
 
@@ -373,7 +395,6 @@ namespace FourDScheduling
                     e.NewValue = e.CurrentValue;
                 }
             }
-
         }
 
         

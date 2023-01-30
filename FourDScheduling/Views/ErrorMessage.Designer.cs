@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorMessage));
             this.BtnClose = new System.Windows.Forms.Button();
             this.LblText = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -71,6 +72,7 @@
             this.Controls.Add(this.LblText);
             this.Controls.Add(this.BtnClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ErrorMessage";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Error_Message";

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainMenu));
             this.BtnCreateSigmaFile = new System.Windows.Forms.Button();
             this.BtnCreateMSProjectFile = new System.Windows.Forms.Button();
             this.BtnUpdateFiles = new System.Windows.Forms.Button();
@@ -280,6 +281,7 @@
             this.Controls.Add(this.BtnCreateMSProjectFile);
             this.Controls.Add(this.BtnCreateSigmaFile);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainMenu";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MainMenu";

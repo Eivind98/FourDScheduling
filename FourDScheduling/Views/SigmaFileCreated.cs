@@ -40,12 +40,9 @@ namespace FourDScheduling
                 return;
             }
 
-            // combine the arguments together
-            // it doesn't matter if there is a space after ','
             string argument = "/select, \"" + filePath + "\"";
             
             Process.Start("explorer.exe", argument);
-
         }
 
         private void BtnGoToMainMenu_Click(object sender, EventArgs e)

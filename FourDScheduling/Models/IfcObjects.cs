@@ -73,11 +73,14 @@ namespace FourDScheduling.Models
             GrossArea = IfcAPI.GetGrossArea(product);
             Volume = IfcAPI.GetVolume(product);
             Thickness = IfcAPI.GetThickness(product);
-            AreaOfOpenings = Math.Round(GrossArea - NetArea, 6);
 
+            if(NetArea != 0 && GrossArea != 0)
+            {
+                AreaOfOpenings = Math.Round(GrossArea - NetArea, 6);
+            }
+            
             Chosen = TypeId == "" ? false : true;
             Product = product;
-
 
             switch (product)
             {

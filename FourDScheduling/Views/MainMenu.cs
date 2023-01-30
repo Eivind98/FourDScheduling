@@ -10,8 +10,6 @@ using IWshRuntimeLibrary;
 
 namespace FourDScheduling
 {
-    
-
     public partial class MainMenu : Form
     {
         public static Form mainM;
@@ -41,6 +39,8 @@ namespace FourDScheduling
             btnMSProjectFilePath1.Click += BtnMSProjectFilePath1_Click;
 
             btnCreateShortcut.Click += BtnCreateShortcut_Click;
+
+            this.VisibleChanged += MainMenu_VisibleChanged;
 
             createSigmaFile = new CreateSigmaFile(this);
             BtnCreateMSProjectFile.Enabled = false;
@@ -82,6 +82,27 @@ namespace FourDScheduling
                 projectDropDown.DataSource = projectFiles;
                 projectDropDown.SelectedIndex = 0;
 
+            }
+        }
+
+        private void MainMenu_VisibleChanged(object sender, EventArgs e)
+        {
+            if (this.Visible)
+            {
+                if (!Globals.IfcFilePath.IsEmpty())
+                {
+                    Helper.shortenString(btnIfcFilePath, Globals.IfcFilePath);
+                }
+
+                if (!Globals.SigmaFilePath.IsEmpty())
+                {
+                    Helper.shortenString(btnSigmaFilePath, Globals.SigmaFilePath);
+                }
+
+                if (!Globals.MSProjectFilePath.IsEmpty())
+                {
+                    Helper.shortenString(btnMSProjectFilePath, Globals.MSProjectFilePath);
+                }
             }
         }
 
